@@ -2,11 +2,6 @@ using UnityEngine;
 
 public class CardInstance : MonoBehaviour
 {
-    void Start() {
-        
-    }
-
-    void Update() {
-        
-    }
+    public CardData cardData;
+    public int remainInPlay;
 }
