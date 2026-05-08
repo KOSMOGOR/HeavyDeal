@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 
 [Serializable]
-public class GameEffect
+public abstract class GameEffect
 {
     public int duration;
+
+    public virtual float OnEvaluateMass(float mass) => mass;
 }
 
 public class GameEffectInstance

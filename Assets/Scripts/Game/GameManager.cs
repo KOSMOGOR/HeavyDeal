@@ -25,16 +25,8 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     }
 
     void ResolveMinutePass() {
-        // game effects
-        foreach (GameEffectInstance gameEffect in gameEffects) {
-            gameEffect.ResolveMinutePass();
-        }
-        // player game effects
-        foreach (Player player in players) {
-            foreach (GameEffectInstance playerGameEffect in player.playerGameEffects) {
-                playerGameEffect.ResolveMinutePass();
-            }
-        }
+        // game and player effects
+        GetAllGameEffectsForAllPlayers().ForEach(effect => effect.ResolveMinutePass());
         // player cards in play
         foreach (Player player in players) {
             player.cardInPlay.remainInPlay -= 1;
@@ -55,5 +47,19 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
         card.cardData.cardEffects.ForEach(ce => ce.OnResolve(player));
         card.cardData.gameEffectsOnResolve.ForEach(ge => GameEffectInstance.CreateAndAdd(ge, gameEffects));
         player.AddPlayerGameEffects(card);
+    }
+
+    public List<GameEffectInstance> GetAllGameEffectsForPlayer(Player player) {
+        List<GameEffectInstance> effects = new();
+        effects.AddRange(gameEffects);
+        effects.AddRange(player.playerGameEffects);
+        return effects;
+    }
+
+    public List<GameEffectInstance> GetAllGameEffectsForAllPlayers() {
+        List<GameEffectInstance> effects = new();
+        effects.AddRange(gameEffects);
+        players.ForEach(player => effects.AddRange(player.playerGameEffects));
+        return effects;
     }
 }
