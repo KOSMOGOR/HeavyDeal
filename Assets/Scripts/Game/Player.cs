@@ -17,27 +17,34 @@ public class Player : MonoBehaviour
     [Header("Card Places")]
     public CardInstance cardInstancePrefab;
     public Transform handCenter;
-    public float handDeltaDistance;
+    public float handDeltaDistance = 1f;
     public Transform cardPlayZone;
     public Transform cardDeckZone;
     public Transform cardDiscardZone;
 
-    List<CardInstance> deck = new(); // 0 - left card
-    List<CardInstance> hand = new(); // 0 - top of the deck
-    List<CardInstance> discard = new(); // 0 - bottom of discard
+    readonly List<CardInstance> deck = new(); // 0 - left card
+    readonly List<CardInstance> hand = new(); // 0 - top of the deck
+    readonly List<CardInstance> discard = new(); // 0 - bottom of discard
 
     void Start() {
         GameManager.I.RegisterPlayer(this);
+        CardData cardData = Resources.Load<CardData>("CardDatas/CardThink");
+        for (int i = 0; i < 5; i++) GiveNewCardToPlayer(cardData);
     }
 
     public void SelectCard(CardInstance card) {
+        if (selectedCard) selectedCard.transform.DOScale(1f, 0.5f);
         selectedCard = card;
+        card.transform.DOScale(1.1f, 0.5f);
     }
 
     public void PlaySelectedCard() {
         if (selectedCard != null && hand.Contains(selectedCard) && cardInPlay == null) {
             hand.Remove(selectedCard);
             cardInPlay = selectedCard;
+            cardInPlay.transform.DOScale(1f, 0.25f);
+            cardInPlay.transform.DOMove(cardPlayZone.position, 0.5f).SetEase(Ease.OutCubic);
+            cardInPlay.transform.SetParent(cardPlayZone);
             selectedCard = null;
             GameManager.I.PlayCard(this, cardInPlay);
         }
@@ -46,7 +53,9 @@ public class Player : MonoBehaviour
     public void DiscardCardInPlay() {
         if (cardInPlay != null) {
             discard.Add(cardInPlay);
-            cardInPlay.SetCardActive(true);
+            cardInPlay.SetCardActive(false);
+            cardInPlay.transform.position = cardDiscardZone.transform.position;
+            cardInPlay.transform.SetParent(cardDiscardZone);
             cardInPlay = null;
         }
     }
@@ -58,11 +67,15 @@ public class Player : MonoBehaviour
     void RepositionCards() {
         if (hand.Count == 0) return;
         float startX = handCenter.position.x - (hand.Count - 1) * handDeltaDistance / 2;
-        for (int i = 0; i < hand.Count; i++) hand[i].transform.DOMove(new(startX + handDeltaDistance * i, handCenter.position.y, handCenter.position.z), 1).SetEase(Ease.OutCubic);
+        for (int i = 0; i < hand.Count; i++) hand[i].transform.DOMove(new(startX + handDeltaDistance * i, handCenter.position.y, handCenter.position.z), 1f).SetEase(Ease.OutCubic);
     }
 
     void ShuffleDiscardToDeck() {
         deck.AddRange(discard);
+        discard.ForEach(card => {
+            card.transform.position = cardDeckZone.transform.position;
+            card.transform.SetParent(cardDeckZone);
+        });
         discard.Clear();
         deck.OrderBy(_ => Random.value);
     }
@@ -70,6 +83,7 @@ public class Player : MonoBehaviour
     public void AddCardToHand(CardInstance card) {
         hand.Add(card);
         card.SetCardActive(true);
+        card.transform.SetParent(handCenter);
         RepositionCards();
     }
 
@@ -78,6 +92,7 @@ public class Player : MonoBehaviour
         if (deck.Count > 0) {
             CardInstance card = deck[0];
             deck.RemoveAt(0);
+            card.CardReset();
             AddCardToHand(card);
         }
     }
@@ -93,13 +108,21 @@ public class Player : MonoBehaviour
     public CardInstance GiveNewCardToPlayer(CardData cardData, PlayerCardPlace place = PlayerCardPlace.Deck) {
         if (place == PlayerCardPlace.InPlay) throw new System.Exception("Use PlaySelectedCard() for this");
         CardInstance card = Instantiate(cardInstancePrefab);
-        card.cardData = cardData;
+        card.SetCardData(cardData);
         card.player = this;
         if (place == PlayerCardPlace.Hand) AddCardToHand(card);
         else  {
             card.SetCardActive(false);
-            if (place == PlayerCardPlace.Deck) deck.Add(card);
-            else if (place == PlayerCardPlace.Discard) discard.Add(card);
+            if (place == PlayerCardPlace.Deck) {
+                card.transform.position = cardDeckZone.transform.position;
+                card.transform.SetParent(cardDeckZone.transform);
+                deck.Add(card);
+            }
+            else if (place == PlayerCardPlace.Discard) {
+                card.transform.position = cardDiscardZone.transform.position;
+                card.transform.SetParent(cardDiscardZone.transform);
+                discard.Add(card);
+            }
         }
         return card;
     }

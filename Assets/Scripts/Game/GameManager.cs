@@ -1,23 +1,28 @@
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class GameManager : SingletonMonoBehaviour<GameManager>
 {
-    public float secondsToGameMinute = 1;
+    public float secondsToGameMinute = 1f;
+    public float delayAfterPlay = 1f;
+    public TMP_Text secondsPassedText;
+
     float secondsPassed;
 
-    List<GameEffectInstance> gameEffects;
-    List<Player> players;
+    readonly List<GameEffectInstance> gameEffects = new();
+    readonly List<Player> players = new();
 
     void Update() {
         if (players.Count > 0 && players.All(p => p.cardInPlay != null)) {
             secondsPassed += Time.deltaTime;
             if (secondsPassed >= secondsToGameMinute) {
-                secondsPassed -= secondsToGameMinute;
+                secondsPassed = 0;
                 ResolveMinutePass();
             }
-        }
+        } else secondsPassed = -delayAfterPlay;
+        if (secondsPassedText) secondsPassedText.text = secondsPassed.ToString("F2");
     }
 
     public void RegisterPlayer(Player player) {

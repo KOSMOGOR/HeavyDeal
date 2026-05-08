@@ -1,6 +1,7 @@
+using System.Linq;
+using TMPro;
 using UnityEngine;
 
-[RequireComponent(typeof(SpriteRenderer))]
 public class CardInstance : MonoBehaviour
 {
     public CardData cardData;
@@ -8,17 +9,30 @@ public class CardInstance : MonoBehaviour
     public float baseMass = 45f; // 30 - 60
     public Player player;
 
-    SpriteRenderer sprite;
+    [Header("Renderers")]
+    public Transform renderRoot;
+    public TMP_Text cardNameText;
 
-    void Awake() {
-        sprite = GetComponent<SpriteRenderer>();
+    public void SetCardData(CardData newCardData) {
+        cardData = newCardData;
+        cardNameText.text = cardData.cardName;
+        CardReset();
     }
 
     public void SetCardActive(bool isActive) {
-        sprite.enabled = isActive;
+        renderRoot.gameObject.SetActive(isActive);
     }
 
     public float EvaluateMass() {
-        return baseMass;
+        return GameManager.I.GetAllGameEffectsForPlayer(player)
+            .Aggregate(baseMass, (mass, effect) => effect.gameEffect.OnEvaluateMass(mass));
+    }
+
+    public void SelectThisCard() {
+        player.SelectCard(this);
+    }
+
+    public void CardReset() {
+        remainInPlay = cardData.cardRemainInPlay;
     }
 }
