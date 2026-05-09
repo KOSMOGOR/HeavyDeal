@@ -32,7 +32,8 @@ public class Player : MonoBehaviour
         for (int i = 0; i < 5; i++) GiveNewCardToPlayer(cardData);
     }
 
-    public void SelectCard(CardInstance card) {
+    public void TrySelectCard(CardInstance card) {
+        if (cardInPlay) return;
         if (selectedCard) selectedCard.transform.DOScale(1f, 0.5f);
         selectedCard = card;
         card.transform.DOScale(1.1f, 0.5f);
@@ -64,7 +65,7 @@ public class Player : MonoBehaviour
         card.cardData.playerGameEffectsOnResolve.ForEach(ge => GameEffectInstance.CreateAndAdd(ge, playerGameEffects));
     }
 
-    void RepositionCards() {
+    void RepositionCardsInHand() {
         if (hand.Count == 0) return;
         float startX = handCenter.position.x - (hand.Count - 1) * handDeltaDistance / 2;
         for (int i = 0; i < hand.Count; i++) hand[i].transform.DOMove(new(startX + handDeltaDistance * i, handCenter.position.y, handCenter.position.z), 1f).SetEase(Ease.OutCubic);
@@ -84,7 +85,7 @@ public class Player : MonoBehaviour
         hand.Add(card);
         card.SetCardActive(true);
         card.transform.SetParent(handCenter);
-        RepositionCards();
+        RepositionCardsInHand();
     }
 
     public void DrawCard() {
@@ -125,6 +126,17 @@ public class Player : MonoBehaviour
             }
         }
         return card;
+    }
+
+    public void RemoveCard(CardInstance card) {
+        if (card.player != this || card == cardInPlay) return;
+        if (hand.Contains(card)) {
+            hand.Remove(card);
+            RepositionCardsInHand();
+        } else {
+            deck.Remove(card);
+            discard.Remove(card);
+        }
     }
 }
 

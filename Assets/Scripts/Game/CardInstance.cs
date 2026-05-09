@@ -8,6 +8,7 @@ public class CardInstance : MonoBehaviour
     public int remainInPlay;
     public float baseMass = 45f; // 30 - 60
     public Player player;
+    public CardInstance targetCard;
 
     [Header("Renderers")]
     public Transform renderRoot;
@@ -29,7 +30,7 @@ public class CardInstance : MonoBehaviour
     }
 
     public void SelectThisCard() {
-        player.SelectCard(this);
+        player.TrySelectCard(this);
     }
 
     public void CardReset() {
