@@ -35,5 +35,6 @@ public class CardInstance : MonoBehaviour
 
     public void CardReset() {
         remainInPlay = cardData.cardRemainInPlay;
+        targetCard = null;
     }
 }

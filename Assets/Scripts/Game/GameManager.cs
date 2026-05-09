@@ -15,7 +15,7 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     readonly List<Player> players = new();
 
     void Update() {
-        if (players.Count > 0 && players.All(p => p.cardInPlay != null)) {
+        if (players.Count > 0 && players.All(p => p.cardInPlay && (!p.cardInPlay.cardData.CardRequiresTarget || p.cardInPlay.targetCard))) {
             secondsPassed += Time.deltaTime;
             if (secondsPassed >= 0 && players.Any(p => p.cardInPlay.cardData.cardRemainInPlay == 0)) {
                 players.ForEach(p => {

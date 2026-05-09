@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
     public int oxygenTanks = 2;
     public int oxygenPerTank = 20;
     // public float distanceToSurface = 500f;
+    public float minCardMass = 30f, maxCardMass = 60f;
     public CardInstance selectedCard;
     public CardInstance cardInPlay;
     public List<GameEffectInstance> playerGameEffects = new();
@@ -33,10 +34,13 @@ public class Player : MonoBehaviour
     }
 
     public void TrySelectCard(CardInstance card) {
-        if (cardInPlay) return;
-        if (selectedCard) selectedCard.transform.DOScale(1f, 0.5f);
-        selectedCard = card;
-        card.transform.DOScale(1.1f, 0.5f);
+        if (cardInPlay && cardInPlay.cardData.CardRequiresTarget && !cardInPlay.targetCard) {
+            cardInPlay.targetCard = card;
+        } else {
+            if (selectedCard) selectedCard.transform.DOScale(1f, 0.5f);
+            selectedCard = card;
+            card.transform.DOScale(1.1f, 0.5f);
+        }
     }
 
     public void PlaySelectedCard() {
@@ -111,6 +115,7 @@ public class Player : MonoBehaviour
         CardInstance card = Instantiate(cardInstancePrefab);
         card.SetCardData(cardData);
         card.player = this;
+        card.baseMass = Random.Range(minCardMass, maxCardMass);
         if (place == PlayerCardPlace.Hand) AddCardToHand(card);
         else  {
             card.SetCardActive(false);
