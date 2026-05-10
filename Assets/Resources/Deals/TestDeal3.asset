@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: deefd2ef22287fb4d8f1c7b0d60e6caa, type: 3}
+  m_Name: TestDeal3
+  m_EditorClassIdentifier: 
+  dealEffects:
+  - rid: 7092928857470140489
+  references:
+    version: 2
+    RefIds:
+    - rid: 7092928857470140489
+      type: {class: DealEffectAddCard, ns: , asm: Assembly-CSharp}
+      data:
+        cardToAdd: {fileID: 11400000, guid: 85162cbddcf6561428ac19c5479badf6, type: 2}
+        whereToAdd: 1

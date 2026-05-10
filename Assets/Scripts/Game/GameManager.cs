@@ -15,7 +15,7 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     readonly List<Player> players = new();
 
     void Update() {
-        if (players.Count > 0 && players.All(p => p.cardInPlay && (!p.cardInPlay.cardData.CardRequiresTarget || p.cardInPlay.targetCard))) {
+        if (players.Count > 0 && players.All(p => p.IsReadyForMinutePass)) {
             secondsPassed += Time.deltaTime;
             if (secondsPassed >= 0 && players.Any(p => p.cardInPlay.cardData.cardRemainInPlay == 0)) {
                 players.ForEach(p => {
@@ -41,11 +41,7 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
         GetAllGameEffectsForAllPlayers().ForEach(effect => effect.ResolveMinutePass());
         // player cards in play
         foreach (Player player in players) {
-            player.cardInPlay.remainInPlay -= 1;
-            if (player.cardInPlay.remainInPlay <= 0) {
-                ResolveCard(player.cardInPlay);
-                player.DiscardCardInPlay();
-            }
+            player.ResolveMinutePassPlayer();
         }
     }
 
@@ -54,7 +50,7 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
         card.cardData.cardEffects.ForEach(ce => ce.OnPlay(player));
     }
 
-    void ResolveCard(CardInstance card) {
+    public void ResolveCard(CardInstance card) {
         if (!players.Contains(card.player)) return;
         card.cardData.cardEffects.ForEach(ce => ce.OnResolve(card.player));
         card.cardData.gameEffectsOnResolve.ForEach(ge => GameEffectInstance.CreateAndAdd(ge, gameEffects));

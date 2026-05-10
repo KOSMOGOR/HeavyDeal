@@ -9,8 +9,10 @@ public class Player : MonoBehaviour
     public int currentOxygenTank = 20;
     public int oxygenTanks = 2;
     public int oxygenPerTank = 20;
+    public int baseOxygenPerMinute = 1;
     // public float distanceToSurface = 500f;
     public float minCardMass = 30f, maxCardMass = 60f;
+    public PlayerState playerState = PlayerState.Regular;
     public CardInstance selectedCard;
     public CardInstance cardInPlay;
     public List<GameEffectInstance> playerGameEffects = new();
@@ -19,12 +21,12 @@ public class Player : MonoBehaviour
     public CardInstance cardInstancePrefab;
     public Transform handCenter;
     public float handDeltaDistance = 1f;
-    public Transform cardPlayZone;
     public Transform cardDeckZone;
     public Transform cardDiscardZone;
+    public Transform cardPlayZone;
 
-    readonly List<CardInstance> deck = new(); // 0 - left card
     readonly List<CardInstance> hand = new(); // 0 - top of the deck
+    readonly List<CardInstance> deck = new(); // 0 - left card
     readonly List<CardInstance> discard = new(); // 0 - bottom of discard
 
     void Start() {
@@ -34,6 +36,7 @@ public class Player : MonoBehaviour
     }
 
     public void TrySelectCard(CardInstance card) {
+        if (playerState != PlayerState.Regular) return;
         if (cardInPlay && cardInPlay.cardData.CardRequiresTarget && !cardInPlay.targetCard) {
             cardInPlay.targetCard = card;
         } else {
@@ -44,6 +47,7 @@ public class Player : MonoBehaviour
     }
 
     public void PlaySelectedCard() {
+        if (playerState != PlayerState.Regular) return;
         if (selectedCard != null && hand.Contains(selectedCard) && cardInPlay == null) {
             hand.Remove(selectedCard);
             cardInPlay = selectedCard;
@@ -143,11 +147,41 @@ public class Player : MonoBehaviour
             discard.Remove(card);
         }
     }
+
+    public void ResolveMinutePassPlayer() {
+        if (cardInPlay != null) {
+            cardInPlay.remainInPlay -= 1;
+            if (cardInPlay.remainInPlay <= 0) {
+                GameManager.I.ResolveCard(cardInPlay);
+                DiscardCardInPlay();
+            }
+        }
+        currentOxygenTank -= EvaluateOxygenPerMinute();
+        if (oxygenTanks > 0) {
+            oxygenTanks--;
+            currentOxygenTank += oxygenPerTank;
+        } else currentOxygenTank = 0;
+    }
+
+    public bool IsReadyForMinutePass => playerState == PlayerState.Regular && cardInPlay && (!cardInPlay.cardData.CardRequiresTarget || cardInPlay.targetCard);
+
+    int EvaluateOxygenPerMinute() {
+        return baseOxygenPerMinute;
+    }
+
+    public void ChangeState(PlayerState newPlayerState) {
+        playerState = newPlayerState;
+    }
+}
+
+public enum PlayerState {
+    Regular,
+    Deal
 }
 
 public enum PlayerCardPlace {
-    InPlay,
     Hand,
     Deck,
-    Discard
+    Discard,
+    InPlay
 }
