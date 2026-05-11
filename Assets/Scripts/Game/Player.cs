@@ -157,10 +157,13 @@ public class Player : MonoBehaviour
             }
         }
         currentOxygenTank -= EvaluateOxygenPerMinute();
-        if (oxygenTanks > 0) {
-            oxygenTanks--;
-            currentOxygenTank += oxygenPerTank;
-        } else currentOxygenTank = 0;
+        if (currentOxygenTank <= 0) {
+            if (oxygenTanks > 0) {
+                oxygenTanks--;
+                currentOxygenTank += oxygenPerTank;
+                DealsManager.I.StartDealSelect(this);
+            } else currentOxygenTank = 0;
+        }
     }
 
     public bool IsReadyForMinutePass => playerState == PlayerState.Regular && cardInPlay && (!cardInPlay.cardData.CardRequiresTarget || cardInPlay.targetCard);
