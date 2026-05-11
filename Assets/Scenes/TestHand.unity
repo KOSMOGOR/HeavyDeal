@@ -416,6 +416,12 @@ MonoBehaviour:
   cardDeckZone: {fileID: 2013719417}
   cardDiscardZone: {fileID: 1498881060}
   cardPlayZone: {fileID: 1971643314}
+  startDeck:
+  - {fileID: 11400000, guid: 85162cbddcf6561428ac19c5479badf6, type: 2}
+  - {fileID: 11400000, guid: ef901c14854d7944f9e565fa22b3b1fe, type: 2}
+  - {fileID: 11400000, guid: 85162cbddcf6561428ac19c5479badf6, type: 2}
+  - {fileID: 11400000, guid: ef901c14854d7944f9e565fa22b3b1fe, type: 2}
+  - {fileID: 11400000, guid: ef901c14854d7944f9e565fa22b3b1fe, type: 2}
 --- !u!4 &709695140
 Transform:
   m_ObjectHideFlags: 0
@@ -599,8 +605,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dealsCount: 3
   dealsCenter: {fileID: 59568930}
-  dealsDeltaOffset: 150
-  dealInstancePrefab: {fileID: 8413524290899564362, guid: f05a3396d7977164cb544b4d5a481e55, type: 3}
+  dealsDeltaOffset: 1
+  dealInstancePrefab: {fileID: 0}
   currentDeals: []
 --- !u!4 &906098688
 Transform:

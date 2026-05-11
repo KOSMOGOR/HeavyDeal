@@ -10,17 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8b207b14b86641441989e55c8fafd528, type: 3}
-  m_Name: CardDataTest
+  m_Name: CardSmash
   m_EditorClassIdentifier: 
-  cardName: Cool Card Name
-  cardType: {fileID: 0}
+  cardName: "\u0420\u0430\u0437\u0431\u0438\u0442\u044C"
+  cardType: {fileID: 11400000, guid: 79c8ba33ca238044c8ff7d214d750f47, type: 2}
   cardRemainInPlay: 1
-  cardEffects: []
-  gameEffectsOnResolve:
-  - rid: -2
+  cardEffects:
+  - rid: 7797031941387583568
+  gameEffectsOnResolve: []
   playerGameEffectsOnResolve: []
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+    - rid: 7797031941387583568
+      type: {class: RemoveCardCE, ns: , asm: Assembly-CSharp}
+      data:
+        cardsToDiscard: 1

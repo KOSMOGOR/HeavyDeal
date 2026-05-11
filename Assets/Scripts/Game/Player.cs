@@ -26,18 +26,22 @@ public class Player : MonoBehaviour
     public Transform cardDiscardZone;
     public Transform cardPlayZone;
 
+    [Header("Initial")]
+    public List<CardData> startDeck;
+
     readonly List<CardInstance> hand = new(); // 0 - top of the deck
+    public List<CardInstance> Hand => hand;
     readonly List<CardInstance> deck = new(); // 0 - left card
     readonly List<CardInstance> discard = new(); // 0 - bottom of discard
 
     void Start() {
         GameManager.I.RegisterPlayer(this);
         CardData cardData = Resources.Load<CardData>("CardDatas/CardThink");
-        for (int i = 0; i < 5; i++) GiveNewCardToPlayer(cardData);
+        for (int i = 0; i < 5; i++) GiveNewCardToPlayer((startDeck.Count() > i && startDeck[i] != null) ? startDeck[i] : cardData);
     }
 
     public void TrySelectCard(CardInstance card) {
-        if (playerState != PlayerState.Regular) return;
+        if (playerState != PlayerState.Regular || !hand.Contains(card)) return;
         if (cardInPlay && cardInPlay.cardData.CardRequiresTarget && !cardInPlay.targetCard) {
             cardInPlay.targetCard = card;
         } else {
@@ -139,14 +143,24 @@ public class Player : MonoBehaviour
     }
 
     public void RemoveCard(CardInstance card) {
-        if (card.player != this || card == cardInPlay) return;
-        if (hand.Contains(card)) {
-            hand.Remove(card);
+        if (card == null || card.player != this || card == cardInPlay) return;
+
+        bool wasRemoved = false;
+
+        if (hand.Remove(card)) {
+            wasRemoved = true;
+            if (selectedCard == card) selectedCard = null;
             RepositionCardsInHand();
-        } else {
-            deck.Remove(card);
-            discard.Remove(card);
         }
+        else if (deck.Remove(card)) wasRemoved = true;
+        else if (discard.Remove(card)) wasRemoved = true;
+
+        if (!wasRemoved) return;
+
+        if (cardInPlay && cardInPlay.targetCard == card) cardInPlay.targetCard = null;
+
+        card.transform.DOKill();
+        Destroy(card.gameObject);
     }
 
     public void ResolveMinutePassPlayer() {
