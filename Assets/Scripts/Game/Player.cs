@@ -10,8 +10,9 @@ public class Player : MonoBehaviour
     public int oxygenTanks = 2;
     public int oxygenPerTank = 20;
     public int baseOxygenPerMinute = 1;
-    // public float distanceToSurface = 500f;
-    public float minCardMass = 30f, maxCardMass = 60f;
+    public float distanceToSurface = 500f;
+    public float massToRise = 200f;
+    public float coefMassToSpeed = 0.5f;
     public PlayerState playerState = PlayerState.Regular;
     public CardInstance selectedCard;
     public CardInstance cardInPlay;
@@ -119,7 +120,7 @@ public class Player : MonoBehaviour
         CardInstance card = Instantiate(cardInstancePrefab);
         card.SetCardData(cardData);
         card.player = this;
-        card.baseMass = Random.Range(minCardMass, maxCardMass);
+        card.baseMass = Random.Range(cardData.cardType.minCardMass, cardData.cardType.maxCardMass);
         if (place == PlayerCardPlace.Hand) AddCardToHand(card);
         else  {
             card.SetCardActive(false);
@@ -163,6 +164,11 @@ public class Player : MonoBehaviour
                 currentOxygenTank += oxygenPerTank;
                 DealsManager.I.StartDealSelect(this);
             } else currentOxygenTank = 0;
+        }
+        float currentMass = EvaluateTotalMass();
+        if (currentMass < massToRise) {
+            float speed = (massToRise - currentMass) * coefMassToSpeed;
+            distanceToSurface -= speed;
         }
     }
 

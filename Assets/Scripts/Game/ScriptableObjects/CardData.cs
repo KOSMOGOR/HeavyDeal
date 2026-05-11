@@ -6,6 +6,7 @@ using UnityEngine;
 public class CardData : ScriptableObject
 {
     public string cardName = "Cool Card Name";
+    public CardType cardType;
     public int cardRemainInPlay = 10;
     [SerializeReference, SubclassSelector] public List<CardEffect> cardEffects;
     [SerializeReference, SubclassSelector] public List<GameEffect> gameEffectsOnResolve;
