@@ -25,6 +25,11 @@ public class DealsManager : SingletonMonoBehaviour<DealsManager>
         return deals;
     }
 
+    int EvaluateDealsCount(Player player)
+    {
+        return dealsCount;
+    }
+
     public void StartDealSelect(Player player) {
         player.ChangeState(PlayerState.Deal);
         List<(DealEffect positiveDealEffect, DealEffect negativeDealEffect)> deals = GetDeals();

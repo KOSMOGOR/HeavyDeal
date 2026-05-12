@@ -4,20 +4,21 @@ using System.Collections.Generic;
 [Serializable]
 public abstract class GameEffect
 {
-    public int duration;
+    public int playDuration, activeDuration;
 
     public virtual float OnEvaluateMass(float mass) => mass;
+    public virtual float OnEvaluateOxygen(float oxygen) => oxygen;
 }
 
 public class GameEffectInstance
 {
     public GameEffect gameEffect;
-    public int remainingDuration;
+    public int remainingPlayDuration, remainingActiveDuration;
     List<GameEffectInstance> effectCollection;
 
     public GameEffectInstance(GameEffect gameEffect) {
         this.gameEffect = gameEffect;
-        remainingDuration = gameEffect.duration;
+        remainingPlayDuration = gameEffect.playDuration;
     }
 
     public static GameEffectInstance CreateAndAdd(GameEffect gameEffect, List<GameEffectInstance> effectCollection) {
@@ -28,8 +29,17 @@ public class GameEffectInstance
         return effectInstance;
     }
 
-    public void ResolveMinutePass() {
-        remainingDuration -= 1;
-        if (remainingDuration <= 0) effectCollection.Remove(this);
+    public void ResolveMinutePass()
+    {
+        if (remainingPlayDuration <= 0 && remainingPlayDuration <= 0)
+        {
+            effectCollection.Remove(this);
+        }
+        if (remainingPlayDuration > 0) {
+            remainingPlayDuration -= 1;
+        }
+        if (remainingActiveDuration > 0) {
+            remainingActiveDuration -= 1;
+        }
     }
 }
