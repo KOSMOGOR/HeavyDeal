@@ -7,6 +7,10 @@ public abstract class GameEffect
     public int duration;
     public bool isPermanent;
 
+    public virtual string DescriptionBase => isPermanent ? "Навсегда: " : $"На {duration} минут: ";
+    public virtual string DescriptionEffect => "Даёт ничего";
+    public virtual string Description => DescriptionBase + DescriptionEffect;
+
     public virtual float OnEvaluateMass(float mass) => mass;
     public virtual float OnEvaluateOxygenConsumption(float oxygen) => oxygen;
     public virtual float OnEvaluateOxygenProduction(float oxygen) => oxygen;

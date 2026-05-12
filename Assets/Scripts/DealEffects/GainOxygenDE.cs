@@ -16,7 +16,7 @@ public class GainOxygenDE : DealEffect
     }
 
     public override void ApplyEffect(Player player) {
-        // player.currentOxygenTank += oxygenToAdd;
+        player.currentOxygenTank += oxygenToAdd;
         player.oxygenTanks += oxygenTanksToAdd;
     }
 }

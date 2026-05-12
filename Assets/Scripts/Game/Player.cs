@@ -234,6 +234,16 @@ public class Player : MonoBehaviour
     public void ChangeState(PlayerState newPlayerState) {
         playerState = newPlayerState;
     }
+
+    public List<CardInstance> GetCardListInPlace(PlayerCardPlace cardPlace) {
+        return cardPlace switch {
+            PlayerCardPlace.Hand => hand,
+            PlayerCardPlace.Deck => deck,
+            PlayerCardPlace.Discard => discard,
+            PlayerCardPlace.InPlay => new() { cardInPlay },
+            _ => throw new System.NotImplementedException()
+        };
+    }
 }
 
 public enum PlayerState {
