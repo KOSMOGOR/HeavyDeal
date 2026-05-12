@@ -605,8 +605,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dealsCount: 3
   dealsCenter: {fileID: 59568930}
-  dealsDeltaOffset: 1
-  dealInstancePrefab: {fileID: 0}
+  dealsDeltaOffset: 150
+  dealInstancePrefab: {fileID: 8413524290899564362, guid: f05a3396d7977164cb544b4d5a481e55, type: 3}
   currentDeals: []
 --- !u!4 &906098688
 Transform:

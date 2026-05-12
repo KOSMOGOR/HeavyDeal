@@ -53,7 +53,7 @@ public class Player : MonoBehaviour
 
     public void PlaySelectedCard() {
         if (playerState != PlayerState.Regular) return;
-        if (selectedCard != null && hand.Contains(selectedCard) && cardInPlay == null) {
+        if (selectedCard != null && hand.Contains(selectedCard) && selectedCard.cardData.canBePlayed && cardInPlay == null) {
             hand.Remove(selectedCard);
             cardInPlay = selectedCard;
             cardInPlay.transform.DOScale(1f, 0.25f);
@@ -121,6 +121,7 @@ public class Player : MonoBehaviour
 
     public CardInstance GiveNewCardToPlayer(CardData cardData, PlayerCardPlace place = PlayerCardPlace.Deck) {
         if (place == PlayerCardPlace.InPlay) throw new System.Exception("Use PlaySelectedCard() for this");
+        if (cardData == null) throw new System.Exception("You can't give null card");
         CardInstance card = Instantiate(cardInstancePrefab);
         card.SetCardData(cardData);
         card.player = this;
@@ -156,8 +157,6 @@ public class Player : MonoBehaviour
         else if (discard.Remove(card)) wasRemoved = true;
 
         if (!wasRemoved) return;
-
-        if (cardInPlay && cardInPlay.targetCard == card) cardInPlay.targetCard = null;
 
         card.transform.DOKill();
         Destroy(card.gameObject);

@@ -6,7 +6,7 @@ public class CardInstance : MonoBehaviour
 {
     public CardData cardData;
     public int remainInPlay;
-    public float baseMass = 45f; // 30 - 60
+    public float baseMass = 45f;
     public Player player;
     public CardInstance targetCard;
 

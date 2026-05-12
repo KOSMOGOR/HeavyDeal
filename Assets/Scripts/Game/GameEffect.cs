@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public abstract class GameEffect
 {
     public int duration;
+    public bool isPermanent;
 
     public virtual float OnEvaluateMass(float mass) => mass;
 }
@@ -29,6 +30,7 @@ public class GameEffectInstance
     }
 
     public void ResolveMinutePass() {
+        if (gameEffect.isPermanent) return;
         remainingDuration -= 1;
         if (remainingDuration <= 0) effectCollection.Remove(this);
     }
