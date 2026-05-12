@@ -8,7 +8,8 @@ public abstract class GameEffect
     public bool isPermanent;
 
     public virtual float OnEvaluateMass(float mass) => mass;
-    public virtual float OnEvaluateOxygen(float oxygen) => oxygen;
+    public virtual float OnEvaluateOxygenConsumption(float oxygen) => oxygen;
+    public virtual float OnEvaluateOxygenProduction(float oxygen) => oxygen;
 }
 
 public class GameEffectInstance

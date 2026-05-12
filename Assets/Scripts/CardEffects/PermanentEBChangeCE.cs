@@ -7,11 +7,11 @@ public class PermanentEBChangeCE : CardEffect
     {
         if (oxygenChange > 0)
         {
-            player.oxygenProductionMinute += oxygenChange;
+            // player.oxygenProductionMinute += oxygenChange;
         }
         else
         {
-            player.oxygenComsumptionMinute += oxygenChange;
+            // player.oxygenComsumptionMinute += oxygenChange;
         }
     }
 }

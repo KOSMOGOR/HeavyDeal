@@ -29,12 +29,6 @@ public class CardInstance : MonoBehaviour
             .Aggregate(baseMass, (mass, effect) => effect.gameEffect.OnEvaluateMass(mass));
     }
 
-    public float EvaluateOxygen()
-    {
-        return GameManager.I.GetAllGameEffectsForPlayer(player)
-            .Aggregate(baseOxygen, (oxygen, effect) => effect.gameEffect.OnEvaluateOxygen(oxygen));
-    }
-
     public void SelectThisCard() {
         player.TrySelectCard(this);
     }

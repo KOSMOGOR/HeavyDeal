@@ -9,9 +9,8 @@ public class Player : MonoBehaviour
     public float currentOxygenTank = 20f;
     public int oxygenTanks = 2;
     public float oxygenPerTank = 20f;
-    public float oxygenComsumptionMinute = 1f;
-    public float oxygenProductionMinute = 0f;
-    public int oxygenConsumptionPauseCount = 0;
+    public float baseOxygenComsumptionMinute = 1f;
+    public float baseOxygenProductionMinute = 0f;
     public float distanceToSurface = 500f;
     public float massToRise = 200f;
     public float coefMassToSpeed = 0.5f;
@@ -221,21 +220,15 @@ public class Player : MonoBehaviour
     float EvaluateOxygenPerMinute() {
         return EvaluateOxygenProductionPerMinute() - EvaluateOxygenConsumptionPerMinute();
     }
-    float EvaluateOxygenConsumptionPerMinute()
-    {
-        if (oxygenConsumptionPauseCount > 0) return 0f;
 
-        float oxygenConsumption = oxygenComsumptionMinute;
-        if (cardInPlay != null) oxygenConsumption += cardInPlay.EvaluateOxygen();
-        return Mathf.Max(oxygenConsumption, 0f);
+    float EvaluateOxygenConsumptionPerMinute() {
+        return Mathf.Max(GameManager.I.GetAllGameEffectsForPlayer(this)
+            .Aggregate(baseOxygenComsumptionMinute, (oxygen, effect) => effect.gameEffect.OnEvaluateOxygenConsumption(oxygen)), 0f);
     }
-    float EvaluateOxygenProductionPerMinute()
-    {
-        return Mathf.Max(oxygenProductionMinute, 0f);
-    }
-    float EvaluateListOxygen(List<CardInstance> cards)
-    {
-        return cards.Sum(card => card.EvaluateOxygen());
+
+    float EvaluateOxygenProductionPerMinute() {
+        return Mathf.Max(GameManager.I.GetAllGameEffectsForPlayer(this)
+            .Aggregate(baseOxygenProductionMinute, (oxygen, effect) => effect.gameEffect.OnEvaluateOxygenProduction(oxygen)), 0f);
     }
 
     public void ChangeState(PlayerState newPlayerState) {

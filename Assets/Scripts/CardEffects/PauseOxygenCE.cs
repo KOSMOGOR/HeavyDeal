@@ -6,10 +6,10 @@ public class PauseOxygenCE : CardEffect
 
     public override void OnPlay(Player player)
     {
-        player.oxygenConsumptionPauseCount += 1;
+        // player.oxygenConsumptionPauseCount += 1;
     }
     public override void OnDiscard(Player player)
     {
-        player.oxygenConsumptionPauseCount = Mathf.Max(0, player.oxygenConsumptionPauseCount - 1);
+        // player.oxygenConsumptionPauseCount = Mathf.Max(0, player.oxygenConsumptionPauseCount - 1);
     }
 }
