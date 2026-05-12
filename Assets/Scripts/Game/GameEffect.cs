@@ -8,6 +8,7 @@ public abstract class GameEffect
     public bool isPermanent;
 
     public virtual float OnEvaluateMass(float mass) => mass;
+    public virtual float OnEvaluateOxygen(float oxygen) => oxygen;
 }
 
 public class GameEffectInstance
@@ -18,7 +19,6 @@ public class GameEffectInstance
 
     public GameEffectInstance(GameEffect gameEffect) {
         this.gameEffect = gameEffect;
-        remainingDuration = gameEffect.duration;
     }
 
     public static GameEffectInstance CreateAndAdd(GameEffect gameEffect, List<GameEffectInstance> effectCollection) {

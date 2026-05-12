@@ -6,10 +6,12 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [Header("Player Data")]
-    public int currentOxygenTank = 20;
+    public float currentOxygenTank = 20f;
     public int oxygenTanks = 2;
-    public int oxygenPerTank = 20;
-    public int baseOxygenPerMinute = 1;
+    public float oxygenPerTank = 20f;
+    public float oxygenComsumptionMinute = 1f;
+    public float oxygenProductionMinute = 0f;
+    public int oxygenConsumptionPauseCount = 0;
     public float distanceToSurface = 500f;
     public float massToRise = 200f;
     public float coefMassToSpeed = 0.5f;
@@ -65,13 +67,38 @@ public class Player : MonoBehaviour
     }
 
     public void DiscardCardInPlay() {
-        if (cardInPlay != null) {
-            discard.Add(cardInPlay);
-            cardInPlay.SetCardActive(false);
-            cardInPlay.transform.position = cardDiscardZone.transform.position;
-            cardInPlay.transform.SetParent(cardDiscardZone);
+        if (cardInPlay != null) DiscardCard(cardInPlay);
+    }
+
+    public void DiscardCard(CardInstance card) {
+        if (card == null || card.player != this) return;
+
+        if (card == cardInPlay) {
+            card.cardData.cardEffects.ForEach(ce => ce.OnDiscard(this));
+            discard.Add(card);
+            card.SetCardActive(false);
+            card.transform.position = cardDiscardZone.transform.position;
+            card.transform.SetParent(cardDiscardZone);
             cardInPlay = null;
+            return;
         }
+
+        bool wasDiscarded = false;
+
+        if (hand.Remove(card)) {
+            wasDiscarded = true;
+            if (selectedCard == card) selectedCard = null;
+            RepositionCardsInHand();
+        }
+        else if (deck.Remove(card)) wasDiscarded = true;
+
+        if (!wasDiscarded) return;
+
+        card.cardData.cardEffects.ForEach(ce => ce.OnDiscard(this));
+        discard.Add(card);
+        card.SetCardActive(false);
+        card.transform.position = cardDiscardZone.transform.position;
+        card.transform.SetParent(cardDiscardZone);
     }
 
     public void AddPlayerGameEffects(CardInstance card) {
@@ -158,19 +185,14 @@ public class Player : MonoBehaviour
 
         if (!wasRemoved) return;
 
+        card.cardData.cardEffects.ForEach(ce => ce.OnRemove(this));
         card.transform.DOKill();
         Destroy(card.gameObject);
     }
 
     public void ResolveMinutePassPlayer() {
-        if (cardInPlay != null) {
-            cardInPlay.remainInPlay -= 1;
-            if (cardInPlay.remainInPlay <= 0) {
-                GameManager.I.ResolveCard(cardInPlay);
-                DiscardCardInPlay();
-            }
-        }
-        currentOxygenTank -= EvaluateOxygenPerMinute();
+        if (cardInPlay != null) cardInPlay.cardData.cardEffects.ForEach(ce => ce.OnActive(this));
+        currentOxygenTank += EvaluateOxygenPerMinute();
         if (currentOxygenTank <= 0) {
             if (oxygenTanks > 0) {
                 oxygenTanks--;
@@ -183,12 +205,37 @@ public class Player : MonoBehaviour
             float speed = (massToRise - currentMass) * coefMassToSpeed;
             distanceToSurface -= speed;
         }
+        if (cardInPlay != null)
+        {
+            cardInPlay.remainInPlay -= 1;
+            if (cardInPlay.remainInPlay <= 0)
+            {
+                GameManager.I.ResolveCard(cardInPlay);
+                DiscardCardInPlay();
+            }
+        }
     }
 
     public bool IsReadyForMinutePass => playerState == PlayerState.Regular && cardInPlay && (!cardInPlay.cardData.CardRequiresTarget || cardInPlay.targetCard);
 
-    int EvaluateOxygenPerMinute() {
-        return baseOxygenPerMinute;
+    float EvaluateOxygenPerMinute() {
+        return EvaluateOxygenProductionPerMinute() - EvaluateOxygenConsumptionPerMinute();
+    }
+    float EvaluateOxygenConsumptionPerMinute()
+    {
+        if (oxygenConsumptionPauseCount > 0) return 0f;
+
+        float oxygenConsumption = oxygenComsumptionMinute;
+        if (cardInPlay != null) oxygenConsumption += cardInPlay.EvaluateOxygen();
+        return Mathf.Max(oxygenConsumption, 0f);
+    }
+    float EvaluateOxygenProductionPerMinute()
+    {
+        return Mathf.Max(oxygenProductionMinute, 0f);
+    }
+    float EvaluateListOxygen(List<CardInstance> cards)
+    {
+        return cards.Sum(card => card.EvaluateOxygen());
     }
 
     public void ChangeState(PlayerState newPlayerState) {
