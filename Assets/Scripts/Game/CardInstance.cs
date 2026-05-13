@@ -8,6 +8,7 @@ public class CardInstance : MonoBehaviour
     public int remainInPlay;
     public float baseMass = 45f;
     public Player player;
+    public PlayerCardPlace currentPlace;
     public CardInstance targetCard;
 
     [Header("Renderers")]
