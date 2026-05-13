@@ -62,7 +62,7 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
         if (!players.Contains(card.player)) return;
         card.cardData.cardEffects.ForEach(ce => ce.OnResolve(card.player));
         card.cardData.gameEffectsOnResolve.ForEach(ge => GameEffectInstance.CreateAndAdd(ge, gameEffects));
-        card.player.AddPlayerGameEffects(card);
+        card.player.AddPlayerGameEffectsForCard(card);
     }
 
     public List<GameEffectInstance> GetAllGameEffectsForPlayer(Player player) {
