@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Player : MonoBehaviour
 {
@@ -28,7 +31,15 @@ public class Player : MonoBehaviour
     public Transform cardPlayZone;
 
     [Header("Initial")]
+    public bool usePrebuiltStartDeck;
     public List<CardData> startDeck;
+    [Serializable] public struct CardTypeCount { public CardType cardType; public int count; }
+    public List<CardTypeCount> startCardTypesCount;
+    public float startMass = 300f;
+    public float maxCardMassDelta = 5f;
+
+    [Header("Other")]
+    public TMP_Text endGameText;
 
     readonly List<CardInstance> hand = new(); // 0 - top of the deck
     public List<CardInstance> Hand => hand;
@@ -38,7 +49,30 @@ public class Player : MonoBehaviour
     void Start() {
         GameManager.I.RegisterPlayer(this);
         CardData cardData = Resources.Load<CardData>("CardDatas/CardThink");
-        for (int i = 0; i < 5; i++) GiveNewCardToPlayer((startDeck.Count() > i && startDeck[i] != null) ? startDeck[i] : cardData);
+#if !UNITY_EDITOR
+        useStartDeck = false;
+#endif
+        if (usePrebuiltStartDeck) {
+            for (int i = 0; i < 5; i++) GiveNewCardToPlayer((startDeck.Count() > i && startDeck[i] != null) ? startDeck[i] : cardData);
+        } else {
+            foreach (CardTypeCount ctc in startCardTypesCount) {
+                for (int i = 0; i < ctc.count; i++) GiveNewCardToPlayer(GameManager.I.GetRandomCardOfType(ctc.cardType));
+            }
+            float delta = EvaluateListMass(deck) - startMass;
+            bool bigger = delta > 0;
+            List<CardInstance> cards = deck.Where(card => bigger ? card.baseMass > card.cardData.cardType.minCardMass : card.baseMass < card.cardData.cardType.maxCardMass).ToList();
+            if (cards.Count == 0 && delta != 0) throw new Exception($"Start hand can't have mass {startMass}, since it already has mass {delta + startMass}");
+            while (delta != 0) {
+                CardInstance cardToChange = cards.GetRandom();
+                CardType cardType = cardToChange.cardData.cardType;
+                float cardMassDeltaAbs = Mathf.Min(bigger ? cardToChange.baseMass - cardType.minCardMass : cardType.maxCardMass - cardToChange.baseMass, maxCardMassDelta);
+                cardToChange.baseMass += bigger ? -cardMassDeltaAbs : cardMassDeltaAbs;
+                if (cardToChange.baseMass == (bigger ? cardType.minCardMass : cardType.maxCardMass)) cards.Remove(cardToChange);
+                delta = EvaluateListMass(deck) - startMass;
+                bigger = delta > 0;
+            }
+        }
+        endGameText.enabled = false;
     }
 
     public void TrySelectCard(CardInstance card) {
@@ -216,6 +250,11 @@ public class Player : MonoBehaviour
                 DiscardCardInPlay();
             }
         }
+        if (distanceToSurface <= 0) {
+            ChangeState(PlayerState.Win);
+        } else if (hand.Count > 0 && hand.All(card => card.cardData == GameManager.I.deadCard)) {
+            ChangeState(PlayerState.Lose);
+        }
     }
 
     public bool IsReadyForMinutePass => playerState == PlayerState.Regular && cardInPlay && (!cardInPlay.cardData.CardRequiresTarget || cardInPlay.targetCard);
@@ -245,6 +284,10 @@ public class Player : MonoBehaviour
 
     public void ChangeState(PlayerState newPlayerState) {
         playerState = newPlayerState;
+        if (playerState == PlayerState.Win || playerState == PlayerState.Lose) {
+            endGameText.enabled = true;
+            endGameText.text = playerState == PlayerState.Win ? "Победа" : "Поражеиние";
+        }
     }
 
     public List<CardInstance> GetCardListInPlace(PlayerCardPlace cardPlace) {
@@ -260,7 +303,9 @@ public class Player : MonoBehaviour
 
 public enum PlayerState {
     Regular,
-    Deal
+    Deal,
+    Win,
+    Lose
 }
 
 public enum PlayerCardPlace {
