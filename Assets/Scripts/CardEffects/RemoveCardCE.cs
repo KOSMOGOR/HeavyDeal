@@ -7,6 +7,8 @@ public class RemoveCardCE : CardEffect
 
     public override bool RequiresTarget => true;
 
+    public override string Description => "Удали карту в руке";
+
     public override void OnResolve(Player player) {
         if (player == null || player.cardInPlay == null || player.Hand.Count <= 0) return;
 
