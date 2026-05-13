@@ -13,10 +13,14 @@ public class CardInstance : MonoBehaviour
     [Header("Renderers")]
     public Transform renderRoot;
     public TMP_Text cardNameText;
+    public TMP_Text cardRemainInPlay;
+    public TMP_Text cardDescription;
 
     public void SetCardData(CardData newCardData) {
         cardData = newCardData;
         cardNameText.text = cardData.cardName;
+        cardRemainInPlay.text = cardData.cardRemainInPlay.ToString();
+        cardDescription.text = cardData.Description;
         CardReset();
     }
 
