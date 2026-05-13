@@ -57,6 +57,7 @@ public class Player : MonoBehaviour
         if (selectedCard != null && hand.Contains(selectedCard) && selectedCard.cardData.canBePlayed && cardInPlay == null) {
             hand.Remove(selectedCard);
             cardInPlay = selectedCard;
+            SetCardPlace(cardInPlay, PlayerCardPlace.InPlay);
             cardInPlay.transform.DOScale(1f, 0.25f);
             cardInPlay.transform.DOMove(cardPlayZone.position, 0.5f).SetEase(Ease.OutCubic);
             cardInPlay.transform.SetParent(cardPlayZone);
@@ -75,6 +76,7 @@ public class Player : MonoBehaviour
         if (card == cardInPlay) {
             card.cardData.cardEffects.ForEach(ce => ce.OnDiscard(this));
             discard.Add(card);
+            SetCardPlace(card, PlayerCardPlace.Discard);
             card.SetCardActive(false);
             card.transform.position = cardDiscardZone.transform.position;
             card.transform.SetParent(cardDiscardZone);
@@ -95,6 +97,7 @@ public class Player : MonoBehaviour
 
         card.cardData.cardEffects.ForEach(ce => ce.OnDiscard(this));
         discard.Add(card);
+        SetCardPlace(card, PlayerCardPlace.Discard);
         card.SetCardActive(false);
         card.transform.position = cardDiscardZone.transform.position;
         card.transform.SetParent(cardDiscardZone);
@@ -118,6 +121,7 @@ public class Player : MonoBehaviour
     void ShuffleDiscardToDeck() {
         deck.AddRange(discard);
         discard.ForEach(card => {
+            SetCardPlace(card, PlayerCardPlace.Deck);
             card.transform.position = cardDeckZone.transform.position;
             card.transform.SetParent(cardDeckZone);
         });
@@ -127,6 +131,7 @@ public class Player : MonoBehaviour
 
     public void AddCardToHand(CardInstance card) {
         hand.Add(card);
+        SetCardPlace(card, PlayerCardPlace.Hand);
         card.SetCardActive(true);
         card.transform.SetParent(handCenter);
         RepositionCardsInHand();
@@ -161,17 +166,24 @@ public class Player : MonoBehaviour
         else  {
             card.SetCardActive(false);
             if (place == PlayerCardPlace.Deck) {
+                SetCardPlace(card, PlayerCardPlace.Deck);
                 card.transform.position = cardDeckZone.transform.position;
                 card.transform.SetParent(cardDeckZone.transform);
                 deck.Add(card);
             }
             else if (place == PlayerCardPlace.Discard) {
+                SetCardPlace(card, PlayerCardPlace.Discard);
                 card.transform.position = cardDiscardZone.transform.position;
                 card.transform.SetParent(cardDiscardZone.transform);
                 discard.Add(card);
             }
         }
         return card;
+    }
+
+    void SetCardPlace(CardInstance card, PlayerCardPlace place) {
+        if (card == null) return;
+        card.currentPlace = place;
     }
 
     public void RemoveCard(CardInstance card) {
