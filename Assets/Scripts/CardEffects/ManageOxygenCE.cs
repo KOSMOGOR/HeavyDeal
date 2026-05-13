@@ -6,10 +6,10 @@ public class ManageOxygenCE : CardEffect
 
     public override void OnPlay(Player player)
     {
-        player.oxygenComsumptionMinute += oxygenConsumption;
+        // player.oxygenComsumptionMinute += oxygenConsumption;
     }
     public override void OnDiscard(Player player)
     {
-        player.oxygenComsumptionMinute -= oxygenConsumption;
+        // player.oxygenComsumptionMinute -= oxygenConsumption;
     }
 }

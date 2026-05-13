@@ -13,6 +13,13 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
 
     readonly List<GameEffectInstance> gameEffects = new();
     readonly List<Player> players = new();
+    List<CardData> regularCards;
+    public List<CardData> RegularCards => regularCards;
+
+    protected override void AwakeNew() {
+        regularCards = Resources.LoadAll<CardData>("CardDatas").ToList();
+        Resources.Load<CardDataList>("SpecialCards").cardDatas.ForEach(cd => regularCards.Remove(cd));
+    }
 
     void Update() {
         if (players.Count > 0 && players.All(p => p.IsReadyForMinutePass)) {
@@ -69,5 +76,9 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
         effects.AddRange(gameEffects);
         players.ForEach(player => effects.AddRange(player.playerGameEffects));
         return effects;
+    }
+
+    public CardData GetRandomCardOfType(CardType cardType) {
+        return RegularCards.Where(card => card.cardType == cardType).GetRandomOrDefault();
     }
 }

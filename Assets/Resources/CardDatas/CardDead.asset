@@ -10,11 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8b207b14b86641441989e55c8fafd528, type: 3}
-  m_Name: CardDataTest
+  m_Name: CardDead
   m_EditorClassIdentifier: 
-  cardName: Cool Card Name
-  cardType: {fileID: 0}
-  cardRemainInPlay: 1
+  cardName: "\u041C\u0451\u0440\u0442\u0432\u0430\u044F \u043A\u0430\u0440\u0442\u0430"
+  cardType: {fileID: 11400000, guid: 185a8fde2058cf4489141a76c6027c42, type: 2}
+  canBePlayed: 1
+  cardRemainInPlay: 0
   cardEffects: []
   gameEffectsOnResolve: []
   playerGameEffectsOnResolve: []

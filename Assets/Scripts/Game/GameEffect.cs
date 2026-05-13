@@ -4,21 +4,26 @@ using System.Collections.Generic;
 [Serializable]
 public abstract class GameEffect
 {
-    public int playDuration, activeDuration;
+    public int duration;
+    public bool isPermanent;
+
+    public virtual string DescriptionBase => isPermanent ? "Навсегда: " : $"На {duration} минут: ";
+    public virtual string DescriptionEffect => "Даёт ничего";
+    public virtual string Description => DescriptionBase + DescriptionEffect;
 
     public virtual float OnEvaluateMass(float mass) => mass;
-    public virtual float OnEvaluateOxygen(float oxygen) => oxygen;
+    public virtual float OnEvaluateOxygenConsumption(float oxygen) => oxygen;
+    public virtual float OnEvaluateOxygenProduction(float oxygen) => oxygen;
 }
 
 public class GameEffectInstance
 {
     public GameEffect gameEffect;
-    public int remainingPlayDuration, remainingActiveDuration;
+    public int remainingDuration;
     List<GameEffectInstance> effectCollection;
 
     public GameEffectInstance(GameEffect gameEffect) {
         this.gameEffect = gameEffect;
-        remainingPlayDuration = gameEffect.playDuration;
     }
 
     public static GameEffectInstance CreateAndAdd(GameEffect gameEffect, List<GameEffectInstance> effectCollection) {
@@ -29,17 +34,9 @@ public class GameEffectInstance
         return effectInstance;
     }
 
-    public void ResolveMinutePass()
-    {
-        if (remainingPlayDuration <= 0 && remainingPlayDuration <= 0)
-        {
-            effectCollection.Remove(this);
-        }
-        if (remainingPlayDuration > 0) {
-            remainingPlayDuration -= 1;
-        }
-        if (remainingActiveDuration > 0) {
-            remainingActiveDuration -= 1;
-        }
+    public void ResolveMinutePass() {
+        if (gameEffect.isPermanent) return;
+        remainingDuration -= 1;
+        if (remainingDuration <= 0) effectCollection.Remove(this);
     }
 }

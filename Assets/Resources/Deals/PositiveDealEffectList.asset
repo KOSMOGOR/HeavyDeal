@@ -13,12 +13,30 @@ MonoBehaviour:
   m_Name: PositiveDealEffectList
   m_EditorClassIdentifier: 
   dealEffects:
-  - rid: 7092928880607232074
+  - rid: 7092928902263996500
+  - rid: 7092928902263996501
+  - rid: 7092928902263996502
+  - rid: 7092928902263996503
   references:
     version: 2
     RefIds:
-    - rid: 7092928880607232074
-      type: {class: DealEffectAddCard, ns: , asm: Assembly-CSharp}
+    - rid: 7092928902263996500
+      type: {class: AddCardOfRandomTypeDE, ns: , asm: Assembly-CSharp}
       data:
-        cardToAdd: {fileID: 11400000, guid: 85162cbddcf6561428ac19c5479badf6, type: 2}
-        whereToAdd: 1
+        cardTypeToAdd: {fileID: 11400000, guid: 074ba46539db80d4cbb9fda3732b97a3, type: 2}
+        whereToAdd: 0
+    - rid: 7092928902263996501
+      type: {class: AddCardOfRandomTypeDE, ns: , asm: Assembly-CSharp}
+      data:
+        cardTypeToAdd: {fileID: 11400000, guid: 79c8ba33ca238044c8ff7d214d750f47, type: 2}
+        whereToAdd: 0
+    - rid: 7092928902263996502
+      type: {class: AddCardOfRandomTypeDE, ns: , asm: Assembly-CSharp}
+      data:
+        cardTypeToAdd: {fileID: 11400000, guid: 25857be71e9ea5c4b909b6cb8b9b252e, type: 2}
+        whereToAdd: 0
+    - rid: 7092928902263996503
+      type: {class: GainOxygenDE, ns: , asm: Assembly-CSharp}
+      data:
+        oxygenToAdd: 0
+        oxygenTanksToAdd: 2
