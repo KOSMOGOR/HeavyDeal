@@ -44,12 +44,13 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     }
 
     void ResolveMinutePass() {
-        // game and player effects
-        GetAllGameEffectsForAllPlayers().ForEach(effect => effect.ResolveMinutePass());
         // player cards in play
         foreach (Player player in players) {
             player.ResolveMinutePassPlayer();
         }
+        // game and player effects
+        GetAllGameEffectsForAllPlayers().ForEach(effect => effect.ResolveMinutePass());
+        // order is better for already applied effects, but still spends 1 minute on newly applied ones, change back, if this works worse
     }
 
     public void PlayCard(Player player, CardInstance card) {

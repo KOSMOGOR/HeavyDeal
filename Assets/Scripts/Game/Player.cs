@@ -197,13 +197,11 @@ public class Player : MonoBehaviour
     public void ResolveMinutePassPlayer() {
         if (cardInPlay != null) cardInPlay.cardData.cardEffects.ForEach(ce => ce.OnActive(this));
         currentOxygenTank += EvaluateOxygenPerMinute();
-        if (currentOxygenTank <= 0) {
-            if (oxygenTanks > 0) {
-                oxygenTanks--;
-                currentOxygenTank += EvaluateOxygenPerTank();
-                DealsManager.I.StartDealSelect(this);
-            } else currentOxygenTank = 0;
-        }
+        if (currentOxygenTank <= 0f && oxygenTanks > 0) {
+            oxygenTanks--;
+            currentOxygenTank += EvaluateOxygenPerTank();
+            DealsManager.I.StartDealSelect(this);
+        } // I think, that it is better to withdraw all oxygen, not zero out(cancel out) all requirements just because of changes of gallon...
         float currentMass = EvaluateTotalMass();
         if (currentMass < massToRise) {
             float speed = (massToRise - currentMass) * coefMassToSpeed;
@@ -227,8 +225,12 @@ public class Player : MonoBehaviour
     }
 
     float EvaluateOxygenConsumptionPerMinute() {
-        return Mathf.Max(GameManager.I.GetAllGameEffectsForPlayer(this)
-            .Aggregate(baseOxygenComsumptionMinute, (oxygen, effect) => effect.gameEffect.OnEvaluateOxygenConsumption(oxygen)), 0f);
+        // Left as KOSMOGOR asked "leave for now"
+        List<GameEffectInstance> effects = GameManager.I.GetAllGameEffectsForPlayer(this);
+        SetOxygenConsumptionGE setConsumptionEffect = effects.Select(effect => effect.gameEffect).OfType<SetOxygenConsumptionGE>().LastOrDefault();
+        if (setConsumptionEffect != null) return Mathf.Max(setConsumptionEffect.oxygenConsumption, 0f);
+        // end of left part
+        return Mathf.Max(effects.Aggregate(baseOxygenComsumptionMinute, (oxygen, effect) => effect.gameEffect.OnEvaluateOxygenConsumption(oxygen)), 0f);
     }
 
     float EvaluateOxygenProductionPerMinute() {
