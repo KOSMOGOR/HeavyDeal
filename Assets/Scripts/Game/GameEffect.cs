@@ -14,6 +14,7 @@ public abstract class GameEffect
     public virtual float OnEvaluateMass(float mass) => mass;
     public virtual float OnEvaluateOxygenConsumption(float oxygen) => oxygen;
     public virtual float OnEvaluateOxygenProduction(float oxygen) => oxygen;
+    public virtual float OnEvaluateOxygenPerTank(float oxygen) => oxygen;
 }
 
 public class GameEffectInstance
@@ -24,6 +25,7 @@ public class GameEffectInstance
 
     public GameEffectInstance(GameEffect gameEffect) {
         this.gameEffect = gameEffect;
+        remainingDuration = gameEffect.duration;
     }
 
     public static GameEffectInstance CreateAndAdd(GameEffect gameEffect, List<GameEffectInstance> effectCollection) {

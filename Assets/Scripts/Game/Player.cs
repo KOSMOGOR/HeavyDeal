@@ -104,6 +104,11 @@ public class Player : MonoBehaviour
         card.cardData.playerGameEffectsOnResolve.ForEach(ge => GameEffectInstance.CreateAndAdd(ge, playerGameEffects));
     }
 
+    public void AddPlayerGameEffect(GameEffect gameEffect) {
+        if (gameEffect == null) return;
+        GameEffectInstance.CreateAndAdd(gameEffect, playerGameEffects);
+    }
+
     void RepositionCardsInHand() {
         if (hand.Count == 0) return;
         float startX = handCenter.position.x - (hand.Count - 1) * handDeltaDistance / 2;
@@ -195,7 +200,7 @@ public class Player : MonoBehaviour
         if (currentOxygenTank <= 0) {
             if (oxygenTanks > 0) {
                 oxygenTanks--;
-                currentOxygenTank += oxygenPerTank;
+                currentOxygenTank += EvaluateOxygenPerTank();
                 DealsManager.I.StartDealSelect(this);
             } else currentOxygenTank = 0;
         }
@@ -229,6 +234,11 @@ public class Player : MonoBehaviour
     float EvaluateOxygenProductionPerMinute() {
         return Mathf.Max(GameManager.I.GetAllGameEffectsForPlayer(this)
             .Aggregate(baseOxygenProductionMinute, (oxygen, effect) => effect.gameEffect.OnEvaluateOxygenProduction(oxygen)), 0f);
+    }
+
+    float EvaluateOxygenPerTank() {
+        return Mathf.Max(GameManager.I.GetAllGameEffectsForPlayer(this)
+            .Aggregate(oxygenPerTank, (oxygen, effect) => effect.gameEffect.OnEvaluateOxygenPerTank(oxygen)), 0f);
     }
 
     public void ChangeState(PlayerState newPlayerState) {
