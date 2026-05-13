@@ -100,8 +100,8 @@ public class Player : MonoBehaviour
         card.transform.SetParent(cardDiscardZone);
     }
 
-    public void AddPlayerGameEffects(CardInstance card) {
-        card.cardData.playerGameEffectsOnResolve.ForEach(ge => GameEffectInstance.CreateAndAdd(ge, playerGameEffects));
+    public void AddPlayerGameEffectsForCard(CardInstance card) {
+        card.cardData.playerGameEffectsOnResolve.ForEach(AddPlayerGameEffect);
     }
 
     public void AddPlayerGameEffect(GameEffect gameEffect) {
