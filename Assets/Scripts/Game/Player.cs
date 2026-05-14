@@ -17,7 +17,7 @@ public class Player : MonoBehaviour
     public float baseDistanceToSurface = 500f, distanceToSurface;
     public float massToRise = 200f;
     public float coefMassToSpeed = 0.5f;
-    public int baseTimeToWait = 10;
+    public int baseWaitingTime = 10;
     public int playerWaitingTime = 0;
     public int basePlayerDrawCardsWaiting = 5;
     public PlayerState playerState = PlayerState.Regular;
@@ -40,6 +40,7 @@ public class Player : MonoBehaviour
     public List<CardTypeCount> startCardTypesCount;
     public float startMass = 300f;
     public float maxCardMassDelta = 5f;
+    public int startPlayerHandSize = 5;
 
     [Header("Renderers")]
     public TMP_Text endGameText;
@@ -73,13 +74,14 @@ public class Player : MonoBehaviour
             while (delta != 0) {
                 CardInstance cardToChange = cards.GetRandom();
                 CardType cardType = cardToChange.cardData.cardType;
-                float cardMassDeltaAbs = Mathf.Min(bigger ? cardToChange.baseMass - cardType.minCardMass : cardType.maxCardMass - cardToChange.baseMass, maxCardMassDelta);
+                float cardMassDeltaAbs = Mathf.Min(bigger ? cardToChange.baseMass - cardType.minCardMass : cardType.maxCardMass - cardToChange.baseMass, maxCardMassDelta, Math.Abs(delta));
                 cardToChange.baseMass += bigger ? -cardMassDeltaAbs : cardMassDeltaAbs;
                 if (cardToChange.baseMass == (bigger ? cardType.minCardMass : cardType.maxCardMass)) cards.Remove(cardToChange);
                 delta = EvaluateListMass(deck) - startMass;
                 bigger = delta > 0;
             }
         }
+        for (int i = 0; i < startPlayerHandSize; i++) DrawCard();
         endGameText.enabled = false;
     }
 
@@ -88,7 +90,8 @@ public class Player : MonoBehaviour
     }
 
     void UpdateRenderers() {
-        cardInPlayText.text = cardInPlay != null ? cardInPlay.remainInPlay.ToString() : "-";
+        cardInPlayText.text = cardInPlay != null ? cardInPlay.remainInPlay.ToString() :
+            playerWaitingTime > 0 ? playerWaitingTime.ToString() : "-";
         distanceToSurfaceText.text = $"Дистанция до поверхности: {distanceToSurface:F1}";
         oxygenText.text = $"Осталось кислорода: {currentOxygenTank:F1}\nОсталось баллонов: {oxygenTanks}";
     }
@@ -324,8 +327,12 @@ public class Player : MonoBehaviour
             if (card == null) continue;
             card.cardData.cardEffects.ForEach(effect => effect.OnMinutePassInCabin(this, card));
         }
-        if (playerWaitingTime > 0) {
-            if (--playerWaitingTime == 0) ResolveWaitingEffect();
+        if (playerState == PlayerState.Waiting) {
+            if (playerWaitingTime > 0) playerWaitingTime--;
+            if (playerWaitingTime <= 0) {
+                ResolveWaitingEffect();
+                ChangeState(PlayerState.Regular);
+            }
         } else if (cardInPlay != null) {
             cardInPlay.remainInPlay -= 1;
             if (cardInPlay.remainInPlay <= 0)
@@ -350,10 +357,12 @@ public class Player : MonoBehaviour
     }
 
     public void StartWaiting() {
-        if (playerWaitingTime == 0) playerWaitingTime = baseTimeToWait;
+        if (playerState == PlayerState.Regular && cardInPlay == null) ChangeState(PlayerState.Waiting);
     }
 
-    public bool IsReadyForMinutePass => playerState == PlayerState.Regular && (cardInPlay && (!cardInPlay.cardData.CardRequiresTarget || cardInPlay.targetCard) || playerWaitingTime > 0);
+    public bool IsReadyForMinutePass =>
+        playerState == PlayerState.Regular && cardInPlay && (!cardInPlay.cardData.CardRequiresTarget || cardInPlay.targetCard) ||
+        playerState == PlayerState.Waiting;
 
     float EvaluateOxygenPerMinute() {
         return EvaluateOxygenProductionPerMinute() - EvaluateOxygenConsumptionPerMinute();
@@ -399,6 +408,8 @@ public class Player : MonoBehaviour
         if (playerState == PlayerState.Win || playerState == PlayerState.Lose) {
             endGameText.enabled = true;
             endGameText.text = playerState == PlayerState.Win ? "Победа" : "Поражение";
+        } else if (playerState == PlayerState.Waiting) {
+            playerWaitingTime = baseWaitingTime;
         }
     }
 
@@ -424,7 +435,8 @@ public enum PlayerState {
     Regular,
     Deal,
     Win,
-    Lose
+    Lose,
+    Waiting
 }
 
 public enum PlayerCardPlace {
