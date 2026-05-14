@@ -12,6 +12,8 @@ public abstract class GameEffect
     public virtual string Description => DescriptionBase + DescriptionEffect;
 
     public virtual float OnEvaluateMass(float mass) => mass;
+    public virtual float OnEvaluateMass(CardInstance card, float mass) => OnEvaluateMass(mass);
+    public virtual float OnEvaluateMassToRise(float massToRise) => massToRise;
     public virtual float OnEvaluateOxygenConsumption(float oxygen) => oxygen;
     public virtual float OnEvaluateOxygenProduction(float oxygen) => oxygen;
     public virtual float OnEvaluateOxygenPerTank(float oxygen) => oxygen;

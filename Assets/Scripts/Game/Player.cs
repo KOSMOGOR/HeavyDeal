@@ -215,8 +215,9 @@ public class Player : MonoBehaviour
             DealsManager.I.StartDealSelect(this);
         } // I think, that it is better to withdraw all oxygen, not zero out(cancel out) all requirements just because of changes of gallon...
         float currentMass = EvaluateTotalMass();
-        if (currentMass < massToRise) {
-            float speed = (massToRise - currentMass) * coefMassToSpeed;
+        float currentMassToRise = EvaluateMassToRise();
+        if (currentMass < currentMassToRise) {
+            float speed = (currentMassToRise - currentMass) * coefMassToSpeed;
             distanceToSurface -= speed;
         }
         if (cardInPlay != null)
@@ -253,6 +254,11 @@ public class Player : MonoBehaviour
     float EvaluateOxygenPerTank() {
         return Mathf.Max(GameManager.I.GetAllGameEffectsForPlayer(this)
             .Aggregate(oxygenPerTank, (oxygen, effect) => effect.gameEffect.OnEvaluateOxygenPerTank(oxygen)), 0f);
+    }
+
+    float EvaluateMassToRise() {
+        return GameManager.I.GetAllGameEffectsForPlayer(this)
+            .Aggregate(massToRise, (mass, effect) => effect.gameEffect.OnEvaluateMassToRise(mass));
     }
 
     public void ChangeState(PlayerState newPlayerState) {
