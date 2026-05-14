@@ -49,9 +49,9 @@ public class Player : MonoBehaviour
     void Start() {
         GameManager.I.RegisterPlayer(this);
         CardData cardData = Resources.Load<CardData>("CardDatas/CardThink");
-#if !UNITY_EDITOR
-        useStartDeck = false;
-#endif
+        #if !UNITY_EDITOR
+            usePrebuiltStartDeck = false;
+        #endif
         if (usePrebuiltStartDeck) {
             for (int i = 0; i < 5; i++) GiveNewCardToPlayer((startDeck.Count() > i && startDeck[i] != null) ? startDeck[i] : cardData);
         } else {
@@ -97,6 +97,7 @@ public class Player : MonoBehaviour
             cardInPlay.transform.SetParent(cardPlayZone);
             selectedCard = null;
             GameManager.I.PlayCard(this, cardInPlay);
+            CheckDeadCardsLoseCondition();
         }
     }
 
@@ -106,6 +107,7 @@ public class Player : MonoBehaviour
 
     public void DiscardCard(CardInstance card) {
         if (card == null || card.player != this) return;
+        if (IsDeadCard(card)) return;
 
         if (card == cardInPlay) {
             card.cardData.cardEffects.ForEach(ce => ce.OnDiscard(this));
@@ -135,6 +137,7 @@ public class Player : MonoBehaviour
         card.SetCardActive(false);
         card.transform.position = cardDiscardZone.transform.position;
         card.transform.SetParent(cardDiscardZone);
+        CheckDeadCardsLoseCondition();
     }
 
     public void AddPlayerGameEffectsForCard(CardInstance card) {
@@ -169,6 +172,8 @@ public class Player : MonoBehaviour
         card.SetCardActive(true);
         card.transform.SetParent(handCenter);
         RepositionCardsInHand();
+        card.cardData.cardEffects.ForEach(ce => ce.OnDraw(this));
+        CheckDeadCardsLoseCondition();
     }
 
     public void DrawCard() {
@@ -220,6 +225,13 @@ public class Player : MonoBehaviour
         card.currentPlace = place;
     }
 
+    bool IsDeadCard(CardInstance card) => card != null && GameManager.I != null && card.cardData == GameManager.I.deadCard;
+
+    void CheckDeadCardsLoseCondition() {
+        if (playerState != PlayerState.Regular) return;
+        if (hand.Count > 0 && hand.All(IsDeadCard)) ChangeState(PlayerState.Lose);
+    }
+
     public void RemoveCard(CardInstance card) {
         if (card == null || card.player != this || card == cardInPlay) return;
 
@@ -236,6 +248,7 @@ public class Player : MonoBehaviour
         if (!wasRemoved) return;
 
         card.cardData.cardEffects.ForEach(ce => ce.OnRemove(this));
+        CheckDeadCardsLoseCondition();
         card.transform.DOKill();
         Destroy(card.gameObject);
     }
@@ -265,8 +278,8 @@ public class Player : MonoBehaviour
         }
         if (distanceToSurface <= 0) {
             ChangeState(PlayerState.Win);
-        } else if (hand.Count > 0 && hand.All(card => card.cardData == GameManager.I.deadCard)) {
-            ChangeState(PlayerState.Lose);
+        } else {
+            CheckDeadCardsLoseCondition();
         }
     }
 
@@ -304,7 +317,7 @@ public class Player : MonoBehaviour
         playerState = newPlayerState;
         if (playerState == PlayerState.Win || playerState == PlayerState.Lose) {
             endGameText.enabled = true;
-            endGameText.text = playerState == PlayerState.Win ? "Победа" : "Поражеиние";
+            endGameText.text = playerState == PlayerState.Win ? "Победа" : "Поражение";
         }
     }
 

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardName: "\u041C\u0451\u0440\u0442\u0432\u0430\u044F \u043A\u0430\u0440\u0442\u0430"
   cardType: {fileID: 11400000, guid: 185a8fde2058cf4489141a76c6027c42, type: 2}
-  canBePlayed: 1
+  canBePlayed: 0
   cardRemainInPlay: 0
   cardEffects: []
   gameEffectsOnResolve: []
