@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b207b14b86641441989e55c8fafd528, type: 3}
   m_Name: CardSearch
   m_EditorClassIdentifier: 
-  cardName: Cool Card Name
+  cardName: "\u041F\u043E\u0438\u0441\u043A"
   cardType: {fileID: 11400000, guid: 79c8ba33ca238044c8ff7d214d750f47, type: 2}
   canBePlayed: 1
   cardRemainInPlay: 0
