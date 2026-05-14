@@ -31,7 +31,7 @@ public class CardInstance : MonoBehaviour
 
     public float EvaluateMass() {
         return GameManager.I.GetAllGameEffectsForPlayer(player)
-            .Aggregate(baseMass, (mass, effect) => effect.gameEffect.OnEvaluateMass(mass));
+            .Aggregate(baseMass, (mass, effect) => effect.gameEffect.OnEvaluateMass(this, mass));
     }
 
     public void SelectThisCard() {
