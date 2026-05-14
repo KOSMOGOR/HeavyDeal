@@ -106,3 +106,6 @@ InitTestScene*.unity*
 /[Aa]ssets/[Ss]ceneDependencyCache*
 
 .vscode/
+
+**/google-services.json*
+**/google-services-desktop.json*
