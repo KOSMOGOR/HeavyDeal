@@ -54,11 +54,12 @@ MonoBehaviour:
   remainInPlay: 0
   baseMass: 45
   player: {fileID: 0}
+  currentPlace: 0
   targetCard: {fileID: 0}
   renderRoot: {fileID: 3098458672442291664}
   cardNameText: {fileID: 6967298864612472027}
-  cardRemainInPlay: {fileID: 0}
-  cardDescription: {fileID: 0}
+  cardRemainInPlay: {fileID: 6639462876503061839}
+  cardDescription: {fileID: 4531463149410559698}
 --- !u!114 &5405772708846200259
 MonoBehaviour:
   m_ObjectHideFlags: 0
