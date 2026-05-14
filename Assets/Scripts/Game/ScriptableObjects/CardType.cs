@@ -5,4 +5,5 @@ public class CardType : ScriptableObject
 {
     public string cardTypeName = "Cool Card Type";
     public float minCardMass = 30f, maxCardMass = 60f;
+    public Sprite cardSprite;
 }

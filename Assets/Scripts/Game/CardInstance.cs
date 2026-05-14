@@ -1,6 +1,7 @@
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CardInstance : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class CardInstance : MonoBehaviour
     public TMP_Text cardRemainInPlay;
     public TMP_Text cardDescription;
     public TMP_Text cardMassText;
+    public Image cardImage;
 
     void Update() {
         cardMassText.text = baseMass.ToString("F1");
@@ -27,6 +29,7 @@ public class CardInstance : MonoBehaviour
         cardNameText.text = cardData.cardName;
         cardRemainInPlay.text = cardData.cardRemainInPlay.ToString();
         cardDescription.text = cardData.Description;
+        cardImage.sprite = cardData.cardSpriteOverride != null ? cardData.cardSpriteOverride : cardData.cardType.cardSprite;
         baseMass = Random.Range(cardData.cardType.minCardMass, cardData.cardType.maxCardMass);
         CardReset();
     }
