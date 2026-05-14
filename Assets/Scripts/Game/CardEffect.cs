@@ -15,6 +15,7 @@ public enum CardEffectTrigger
 public abstract class CardEffect
 {
     public virtual bool RequiresTarget => false;
+    public virtual int MinimumOtherHandCardsToPlay => RequiresTarget ? 1 : 0;
 
     public virtual string Description => "Ничего не делает";
 

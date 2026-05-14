@@ -14,7 +14,7 @@ public class Player : MonoBehaviour
     public float oxygenPerTank = 60f;
     public float baseOxygenComsumptionMinute = 1f;
     public float baseOxygenProductionMinute = 0f;
-    public float distanceToSurface = 500f;
+    public float baseDistanceToSurface = 500f, distanceToSurface;
     public float massToRise = 200f;
     public float coefMassToSpeed = 0.5f;
     public int baseTimeToWait = 10;
@@ -55,6 +55,7 @@ public class Player : MonoBehaviour
     void Start() {
         GameManager.I.RegisterPlayer(this);
         currentOxygenTank = oxygenPerTank;
+        distanceToSurface = baseDistanceToSurface;
         CardData cardData = Resources.Load<CardData>("CardDatas/CardThink");
         #if !UNITY_EDITOR
             usePrebuiltStartDeck = false;
@@ -110,6 +111,12 @@ public class Player : MonoBehaviour
     public bool PlayCardFromHand(CardInstance card) {
         if (playerState != PlayerState.Regular) return false;
         if (card != null && hand.Contains(card) && card.cardData.canBePlayed && cardInPlay == null) {
+            int remainingHandCardsAfterPlay = hand.Count - 1;
+            int minimumOtherHandCardsRequired = card.cardData.cardEffects.Count > 0
+                ? card.cardData.cardEffects.Max(effect => effect.MinimumOtherHandCardsToPlay)
+                : 0;
+            if (remainingHandCardsAfterPlay < minimumOtherHandCardsRequired) return false;
+
             if (selectedCard != null && selectedCard != card) selectedCard.transform.DOScale(1f, 0.5f);
             hand.Remove(card);
             cardInPlay = card;
