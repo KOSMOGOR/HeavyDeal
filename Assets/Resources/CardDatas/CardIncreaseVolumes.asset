@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b207b14b86641441989e55c8fafd528, type: 3}
+  m_Name: CardIncreaseVolumes
+  m_EditorClassIdentifier: 
+  cardName: "\u041F\u043E\u0432\u044B\u0448\u0435\u043D\u0438\u0435 \u043E\u0431\u044A\u0451\u043C\u043E\u0432"
+  cardType: {fileID: 11400000, guid: 074ba46539db80d4cbb9fda3732b97a3, type: 2}
+  canBePlayed: 0
+  cardRemainInPlay: 0
+  cardEffects:
+  - rid: 7797032002472640631
+  gameEffectsOnResolve: []
+  playerGameEffectsOnResolve: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 7797032002472640631
+      type: {class: AddPlayerGameEffectOnRemoveCE, ns: , asm: Assembly-CSharp}
+      data:
+        gameEffect:
+          rid: 7797032002472640632
+    - rid: 7797032002472640632
+      type: {class: AddOxygenPerTankGE, ns: , asm: Assembly-CSharp}
+      data:
+        duration: 0
+        isPermanent: 1
+        oxygenPerTankDelta: 5
