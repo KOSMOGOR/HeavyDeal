@@ -8,6 +8,7 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     public float secondsToGameMinute = 1f;
     public float delayAfterPlay = 1f;
     public TMP_Text secondsPassedText;
+    public CardData deadCard;
 
     float secondsPassed;
 
