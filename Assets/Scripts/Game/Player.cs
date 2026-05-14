@@ -245,25 +245,42 @@ public class Player : MonoBehaviour
         if (hand.Count > 0 && hand.All(IsDeadCard)) ChangeState(PlayerState.Lose);
     }
 
-    public void RemoveCard(CardInstance card) {
-        if (card == null || card.player != this || card == cardInPlay) return;
-
-        bool wasRemoved = false;
+    bool RemoveCardFromPlaces(CardInstance card) {
+        if (card == null || card.player != this || card == cardInPlay) return false;
 
         if (hand.Remove(card)) {
-            wasRemoved = true;
             if (selectedCard == card) selectedCard = null;
             RepositionCardsInHand();
+            return true;
         }
-        else if (deck.Remove(card)) wasRemoved = true;
-        else if (discard.Remove(card)) wasRemoved = true;
+        if (deck.Remove(card)) return true;
+        if (discard.Remove(card)) return true;
+        return false;
+    }
 
-        if (!wasRemoved) return;
+    public void RemoveCard(CardInstance card) {
+        if (!RemoveCardFromPlaces(card)) return;
 
         card.cardData.cardEffects.ForEach(ce => ce.OnRemove(this));
         CheckDeadCardsLoseCondition();
         card.transform.DOKill();
         Destroy(card.gameObject);
+    }
+
+    public void RemoveCards(IEnumerable<CardInstance> cards) {
+        if (cards == null) return;
+
+        CardInstance[] cardsToRemove = cards.Where(card => card != null).Distinct().ToArray();
+        if (cardsToRemove.Length == 0) return;
+
+        foreach (CardInstance card in cardsToRemove) {
+            if (!RemoveCardFromPlaces(card)) continue;
+            card.cardData.cardEffects.ForEach(ce => ce.OnRemove(this));
+            card.transform.DOKill();
+            Destroy(card.gameObject);
+        }
+
+        CheckDeadCardsLoseCondition();
     }
 
     public void ResolveMinutePassPlayer() {
