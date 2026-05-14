@@ -16,12 +16,18 @@ public class CardInstance : MonoBehaviour
     public TMP_Text cardNameText;
     public TMP_Text cardRemainInPlay;
     public TMP_Text cardDescription;
+    public TMP_Text cardMassText;
+
+    void Update() {
+        cardMassText.text = baseMass.ToString();
+    }
 
     public void SetCardData(CardData newCardData) {
         cardData = newCardData;
         cardNameText.text = cardData.cardName;
         cardRemainInPlay.text = cardData.cardRemainInPlay.ToString();
         cardDescription.text = cardData.Description;
+        baseMass = Random.Range(cardData.cardType.minCardMass, cardData.cardType.maxCardMass);
         CardReset();
     }
 

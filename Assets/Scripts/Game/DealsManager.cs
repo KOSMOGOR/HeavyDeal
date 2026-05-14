@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DealsManager : SingletonMonoBehaviour<DealsManager>
 {
-    public int dealsCount = 3;
+    public int baseDealsCount = 3;
     public Transform dealsCenter;
     public float dealsDeltaOffset = 1f;
     public DealInstance dealInstancePrefab;
@@ -18,21 +18,21 @@ public class DealsManager : SingletonMonoBehaviour<DealsManager>
         negativeDealEffects = Resources.Load<DealEffectList>("Deals/NegativeDealEffectList");
     }
 
-    List<(DealEffect, DealEffect)> GetDeals() {
+    List<(DealEffect, DealEffect)> GetDeals(Player player) {
         List<(DealEffect positiveDealEffect, DealEffect negativeDealEffect)> deals = new();
-        for (int i = 0; i < dealsCount; i++)
+        for (int i = 0; i < EvaluateDealsCount(player); i++)
             deals.Add((positiveDealEffects.dealEffects.OrderBy(_ => Random.value).First(), negativeDealEffects.dealEffects.OrderBy(_ => Random.value).First()));
         return deals;
     }
 
-    int EvaluateDealsCount(Player player)
-    {
-        return dealsCount;
+    int EvaluateDealsCount(Player player) {
+        return GameManager.I.GetAllGameEffectsForPlayer(player)
+            .Aggregate(baseDealsCount, (dealsCount, effect) => effect.gameEffect.OnEvaluateDealsCount(dealsCount));
     }
 
     public void StartDealSelect(Player player) {
         player.ChangeState(PlayerState.Deal);
-        List<(DealEffect positiveDealEffect, DealEffect negativeDealEffect)> deals = GetDeals();
+        List<(DealEffect positiveDealEffect, DealEffect negativeDealEffect)> deals = GetDeals(player);
         float startX = dealsCenter.position.x - (deals.Count - 1) * dealsDeltaOffset / 2;
         currentDeals.Clear();
         for (int i = 0; i < deals.Count; i++) {

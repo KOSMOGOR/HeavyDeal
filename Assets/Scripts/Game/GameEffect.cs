@@ -17,6 +17,8 @@ public abstract class GameEffect
     public virtual float OnEvaluateOxygenConsumption(float oxygen) => oxygen;
     public virtual float OnEvaluateOxygenProduction(float oxygen) => oxygen;
     public virtual float OnEvaluateOxygenPerTank(float oxygen) => oxygen;
+    public virtual int OnEvaluateDealsCount(int deals) => deals;
+    public virtual bool OnEvaluateWaitingDiscard(bool discard, CardInstance card) => discard;
 }
 
 public class GameEffectInstance
