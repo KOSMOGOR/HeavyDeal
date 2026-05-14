@@ -87,10 +87,15 @@ public class Player : MonoBehaviour
     }
 
     public void PlaySelectedCard() {
-        if (playerState != PlayerState.Regular) return;
-        if (selectedCard != null && hand.Contains(selectedCard) && selectedCard.cardData.canBePlayed && cardInPlay == null) {
-            hand.Remove(selectedCard);
-            cardInPlay = selectedCard;
+        PlayCardFromHand(selectedCard);
+    }
+
+    public bool PlayCardFromHand(CardInstance card) {
+        if (playerState != PlayerState.Regular) return false;
+        if (card != null && hand.Contains(card) && card.cardData.canBePlayed && cardInPlay == null) {
+            if (selectedCard != null && selectedCard != card) selectedCard.transform.DOScale(1f, 0.5f);
+            hand.Remove(card);
+            cardInPlay = card;
             SetCardPlace(cardInPlay, PlayerCardPlace.InPlay);
             cardInPlay.transform.DOScale(1f, 0.25f);
             cardInPlay.transform.DOMove(cardPlayZone.position, 0.5f).SetEase(Ease.OutCubic);
@@ -98,7 +103,9 @@ public class Player : MonoBehaviour
             selectedCard = null;
             GameManager.I.PlayCard(this, cardInPlay);
             CheckDeadCardsLoseCondition();
+            return true;
         }
+        return false;
     }
 
     public void DiscardCardInPlay() {
@@ -172,7 +179,7 @@ public class Player : MonoBehaviour
         card.SetCardActive(true);
         card.transform.SetParent(handCenter);
         RepositionCardsInHand();
-        card.cardData.cardEffects.ForEach(ce => ce.OnDraw(this));
+        card.cardData.cardEffects.ForEach(ce => ce.OnDraw(this, card));
         CheckDeadCardsLoseCondition();
     }
 
@@ -284,6 +291,10 @@ public class Player : MonoBehaviour
             float speed = (currentMassToRise - currentMass) * coefMassToSpeed;
             distanceToSurface -= speed;
         }
+        foreach (CardInstance card in GetCardsInCabin().ToArray()) {
+            if (card == null) continue;
+            card.cardData.cardEffects.ForEach(effect => effect.OnMinutePassInCabin(this, card));
+        }
         if (cardInPlay != null)
         {
             cardInPlay.remainInPlay -= 1;
@@ -310,9 +321,15 @@ public class Player : MonoBehaviour
         // Left as KOSMOGOR asked "leave for now"
         List<GameEffectInstance> effects = GameManager.I.GetAllGameEffectsForPlayer(this);
         SetOxygenConsumptionGE setConsumptionEffect = effects.Select(effect => effect.gameEffect).OfType<SetOxygenConsumptionGE>().LastOrDefault();
-        if (setConsumptionEffect != null) return Mathf.Max(setConsumptionEffect.oxygenConsumption, 0f);
+        float currentConsumption = setConsumptionEffect != null
+            ? Mathf.Max(setConsumptionEffect.oxygenConsumption, 0f)
+            : Mathf.Max(effects.Aggregate(baseOxygenComsumptionMinute, (oxygen, effect) => effect.gameEffect.OnEvaluateOxygenConsumption(oxygen)), 0f);
         // end of left part
-        return Mathf.Max(effects.Aggregate(baseOxygenComsumptionMinute, (oxygen, effect) => effect.gameEffect.OnEvaluateOxygenConsumption(oxygen)), 0f);
+        foreach (CardInstance card in GetCardsInCabin()) {
+            currentConsumption = card.cardData.cardEffects
+                .Aggregate(currentConsumption, (oxygen, effect) => effect.OnEvaluateOxygenConsumption(this, card, oxygen));
+        }
+        return Mathf.Max(currentConsumption, 0f);
     }
 
     float EvaluateOxygenProductionPerMinute() {
@@ -326,8 +343,13 @@ public class Player : MonoBehaviour
     }
 
     float EvaluateMassToRise() {
-        return GameManager.I.GetAllGameEffectsForPlayer(this)
+        float currentMassToRise = GameManager.I.GetAllGameEffectsForPlayer(this)
             .Aggregate(massToRise, (mass, effect) => effect.gameEffect.OnEvaluateMassToRise(mass));
+        foreach (CardInstance card in GetCardsInCabin()) {
+            currentMassToRise = card.cardData.cardEffects
+                .Aggregate(currentMassToRise, (mass, effect) => effect.OnEvaluateMassToRise(this, card, mass));
+        }
+        return currentMassToRise;
     }
 
     public void ChangeState(PlayerState newPlayerState) {
@@ -346,6 +368,13 @@ public class Player : MonoBehaviour
             PlayerCardPlace.InPlay => new() { cardInPlay },
             _ => throw new System.NotImplementedException()
         };
+    }
+
+    IEnumerable<CardInstance> GetCardsInCabin() {
+        foreach (CardInstance card in hand) yield return card;
+        foreach (CardInstance card in deck) yield return card;
+        foreach (CardInstance card in discard) yield return card;
+        if (cardInPlay != null) yield return cardInPlay;
     }
 }
 
