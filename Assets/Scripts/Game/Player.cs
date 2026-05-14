@@ -38,8 +38,11 @@ public class Player : MonoBehaviour
     public float startMass = 300f;
     public float maxCardMassDelta = 5f;
 
-    [Header("Other")]
+    [Header("Renderers")]
     public TMP_Text endGameText;
+    public TMP_Text cardInPlayText;
+    public TMP_Text distanceToSurfaceText;
+    public TMP_Text oxygenText;
 
     readonly List<CardInstance> hand = new(); // 0 - top of the deck
     public List<CardInstance> Hand => hand;
@@ -73,6 +76,16 @@ public class Player : MonoBehaviour
             }
         }
         endGameText.enabled = false;
+    }
+
+    void Update() {
+        UpdateRenderers();
+    }
+
+    void UpdateRenderers() {
+        cardInPlayText.text = cardInPlay != null ? cardInPlay.remainInPlay.ToString() : "-";
+        distanceToSurfaceText.text = $"Дистанция до поверхности: {distanceToSurface}";
+        oxygenText.text = $"Осталось кислорода: {currentOxygenTank}\nОсталось баллонов: {oxygenTanks}";
     }
 
     public void TrySelectCard(CardInstance card) {
@@ -202,8 +215,8 @@ public class Player : MonoBehaviour
     }
 
     public CardInstance GiveNewCardToPlayer(CardData cardData, PlayerCardPlace place = PlayerCardPlace.Deck) {
-        if (place == PlayerCardPlace.InPlay) throw new System.Exception("Use PlaySelectedCard() for this");
-        if (cardData == null) throw new System.Exception("You can't give null card");
+        if (place == PlayerCardPlace.InPlay) throw new Exception("Use PlaySelectedCard() for this");
+        if (cardData == null) throw new Exception("You can't give null card");
         CardInstance card = Instantiate(cardInstancePrefab);
         card.SetCardData(cardData);
         card.player = this;
@@ -366,7 +379,7 @@ public class Player : MonoBehaviour
             PlayerCardPlace.Deck => deck,
             PlayerCardPlace.Discard => discard,
             PlayerCardPlace.InPlay => new() { cardInPlay },
-            _ => throw new System.NotImplementedException()
+            _ => throw new NotImplementedException()
         };
     }
 
