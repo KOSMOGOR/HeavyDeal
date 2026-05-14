@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b207b14b86641441989e55c8fafd528, type: 3}
   m_Name: CardSecondChance
   m_EditorClassIdentifier: 
-  cardName: Cool Card Name
+  cardName: "\u0412\u0442\u043E\u0440\u043E\u0439 \u0448\u0430\u043D\u0441"
   cardType: {fileID: 0}
   canBePlayed: 1
   cardRemainInPlay: 0
