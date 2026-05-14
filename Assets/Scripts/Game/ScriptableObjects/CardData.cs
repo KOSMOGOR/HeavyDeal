@@ -13,10 +13,10 @@ public class CardData : ScriptableObject
     [SerializeReference, SubclassSelector] public List<GameEffect> gameEffectsOnResolve;
     [SerializeReference, SubclassSelector] public List<GameEffect> playerGameEffectsOnResolve;
 
-    string DescriptionCE => cardEffects.Count > 0 ? "При разыгрывании: " + string.Join('\n', cardEffects.Select(ce => ce.Description)) : null;
+    string DescriptionCE => cardEffects.Count > 0 ? string.Join('\n', cardEffects.Select(ce => ce.Description)) : null;
     string DescriptionGE => gameEffectsOnResolve.Count > 0 ? "При разрешении для всех: " + string.Join('\n', gameEffectsOnResolve.Select(ge => ge.Description)) : null;
     string DescriptionPGE => playerGameEffectsOnResolve.Count > 0 ? "При разрешении: " + string.Join('\n', playerGameEffectsOnResolve.Select(ge => ge.Description)) : null;
-    public string Description => string.Join('\n', new[] { DescriptionCE, DescriptionGE, DescriptionPGE }.Select(s => !string.IsNullOrEmpty(s)));
+    public string Description => string.Join('\n', new[] { DescriptionCE, DescriptionGE, DescriptionPGE }.Where(s => !string.IsNullOrEmpty(s)));
 
     public bool CardRequiresTarget => cardEffects.Any(ce => ce.RequiresTarget);
 }

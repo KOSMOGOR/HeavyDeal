@@ -1,16 +1,16 @@
 using System;
 
 [Serializable]
-public class ChangeDistanceByTargetMassCE : CardEffect
+public class ChangeDistanceByTargetMassCE : TriggeredCardEffect
 {
     public float massMultiplier = 1f;
     public bool removeTargetCard;
 
     public override bool RequiresTarget => true;
 
-    public override string Description => $"Изменяет глубину на вес выбранной карты x {massMultiplier}{(removeTargetCard ? " и удаляет её" : "")}";
+    public override string Description => DescribeWithTrigger($"Изменяет глубину на вес выбранной карты x {massMultiplier}{(removeTargetCard ? " и удаляет её" : "")}");
 
-    public override void OnResolve(Player player)
+    protected override void Apply(Player player)
     {
         if (player == null || player.cardInPlay == null) return;
         CardInstance targetCard = player.cardInPlay.targetCard;

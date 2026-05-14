@@ -1,15 +1,15 @@
 using System;
 
 [Serializable]
-public class RemoveCardCE : CardEffect
+public class RemoveCardCE : TriggeredCardEffect
 {
     public int cardsToDiscard = 1;
 
     public override bool RequiresTarget => true;
 
-    public override string Description => "Удали карту в руке";
+    public override string Description => DescribeWithTrigger("Удали карту в руке");
 
-    public override void OnResolve(Player player) {
+    protected override void Apply(Player player) {
         if (player == null || player.cardInPlay == null || player.Hand.Count <= 0) return;
 
         CardInstance targetCard = player.cardInPlay.targetCard;
