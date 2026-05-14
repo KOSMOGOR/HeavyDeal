@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b207b14b86641441989e55c8fafd528, type: 3}
+  m_Name: CardHeliumGalon
+  m_EditorClassIdentifier: 
+  cardName: "\u0413\u0435\u043B\u0438\u0435\u0432\u044B\u0439 \u0431\u0430\u043B\u043B\u043E\u043D"
+  cardType: {fileID: 11400000, guid: 25857be71e9ea5c4b909b6cb8b9b252e, type: 2}
+  canBePlayed: 1
+  cardRemainInPlay: 10
+  cardEffects: []
+  gameEffectsOnResolve: []
+  playerGameEffectsOnResolve:
+  - rid: 7797032002472640614
+  - rid: 7797032002472640615
+  references:
+    version: 2
+    RefIds:
+    - rid: 7797032002472640614
+      type: {class: AddOxygenConsumptionGE, ns: , asm: Assembly-CSharp}
+      data:
+        duration: 10
+        isPermanent: 0
+        oxygenConsumptionDelta: 1
+    - rid: 7797032002472640615
+      type: {class: AddMassToRiseGE, ns: , asm: Assembly-CSharp}
+      data:
+        duration: 10
+        isPermanent: 0
+        massToRiseDelta: 20
