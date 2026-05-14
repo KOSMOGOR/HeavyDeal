@@ -61,6 +61,7 @@ MonoBehaviour:
   cardRemainInPlay: {fileID: 6639462876503061839}
   cardDescription: {fileID: 4531463149410559698}
   cardMassText: {fileID: 5759301641534810689}
+  cardImage: {fileID: 1867575781883470156}
 --- !u!114 &5405772708846200259
 MonoBehaviour:
   m_ObjectHideFlags: 0
