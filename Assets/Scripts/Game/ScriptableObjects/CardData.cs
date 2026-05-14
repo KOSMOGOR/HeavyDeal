@@ -9,6 +9,7 @@ public class CardData : ScriptableObject
     public CardType cardType;
     public bool canBePlayed = true;
     public int cardRemainInPlay = 10;
+    public Sprite cardSpriteOverride;
     [SerializeReference, SubclassSelector] public List<CardEffect> cardEffects;
     [SerializeReference, SubclassSelector] public List<GameEffect> gameEffectsOnResolve;
     [SerializeReference, SubclassSelector] public List<GameEffect> playerGameEffectsOnResolve;
