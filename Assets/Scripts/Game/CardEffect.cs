@@ -8,7 +8,8 @@ public enum CardEffectTrigger
     OnActive,
     OnResolve,
     OnDiscard,
-    OnRemove
+    OnRemove,
+    OnMinutePassInCabin
 }
 
 [Serializable]
@@ -29,6 +30,7 @@ public abstract class CardEffect
     public virtual void OnMinutePassInCabin(Player player, CardInstance card) {}
     public virtual float OnEvaluateOxygenConsumption(Player player, CardInstance card, float oxygen) => oxygen;
     public virtual float OnEvaluateMassToRise(Player player, CardInstance card, float massToRise) => massToRise;
+    public virtual void OnDeath(Player player, CardInstance card) {}
 }
 
 [Serializable]
@@ -49,6 +51,7 @@ public abstract class TriggeredCardEffect : CardEffect
         CardEffectTrigger.OnResolve => "При разрешении",
         CardEffectTrigger.OnDiscard => "При сбросе",
         CardEffectTrigger.OnRemove => "При удалении",
+        CardEffectTrigger.OnMinutePassInCabin => "Каждую минуту",
         _ => "Эффект"
     };
 
@@ -66,4 +69,5 @@ public abstract class TriggeredCardEffect : CardEffect
     public sealed override void OnResolve(Player player) => TryApply(player, CardEffectTrigger.OnResolve);
     public sealed override void OnDiscard(Player player) => TryApply(player, CardEffectTrigger.OnDiscard);
     public sealed override void OnRemove(Player player) => TryApply(player, CardEffectTrigger.OnRemove);
+    public sealed override void OnMinutePassInCabin(Player player, CardInstance card) => TryApply(player, CardEffectTrigger.OnMinutePassInCabin);
 }

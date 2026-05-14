@@ -19,7 +19,7 @@ public class CardInstance : MonoBehaviour
     public TMP_Text cardMassText;
 
     void Update() {
-        cardMassText.text = baseMass.ToString();
+        cardMassText.text = baseMass.ToString("F1");
     }
 
     public void SetCardData(CardData newCardData) {

@@ -89,8 +89,8 @@ public class Player : MonoBehaviour
 
     void UpdateRenderers() {
         cardInPlayText.text = cardInPlay != null ? cardInPlay.remainInPlay.ToString() : "-";
-        distanceToSurfaceText.text = $"Дистанция до поверхности: {distanceToSurface}";
-        oxygenText.text = $"Осталось кислорода: {currentOxygenTank}\nОсталось баллонов: {oxygenTanks}";
+        distanceToSurfaceText.text = $"Дистанция до поверхности: {distanceToSurface:F1}";
+        oxygenText.text = $"Осталось кислорода: {currentOxygenTank:F1}\nОсталось баллонов: {oxygenTanks}";
     }
 
     public void TrySelectCard(CardInstance card) {
@@ -258,8 +258,14 @@ public class Player : MonoBehaviour
     bool IsDeadCard(CardInstance card) => card != null && GameManager.I != null && card.cardData == GameManager.I.deadCard;
 
     void CheckDeadCardsLoseCondition() {
-        if (playerState != PlayerState.Regular) return;
-        if (hand.Count > 0 && hand.All(IsDeadCard)) ChangeState(PlayerState.Lose);
+        if (DeadCardLoseCondition()) {
+            GetCardsInCabin().ToList().ForEach(card => card.cardData.cardEffects.ForEach(ce => ce.OnDeath(this, card)));
+            if (DeadCardLoseCondition()) ChangeState(PlayerState.Lose);
+        }
+    }
+
+    bool DeadCardLoseCondition() {
+        return hand.Count > 0 && hand.All(IsDeadCard);
     }
 
     bool RemoveCardFromPlaces(CardInstance card) {
