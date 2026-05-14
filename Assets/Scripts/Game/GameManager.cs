@@ -25,9 +25,9 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     void Update() {
         if (players.Count > 0 && players.All(p => p.IsReadyForMinutePass)) {
             secondsPassed += Time.deltaTime;
-            if (secondsPassed >= 0 && players.Any(p => p.cardInPlay.cardData.cardRemainInPlay == 0)) {
+            if (secondsPassed >= 0 && players.Any(p => p.cardInPlay && p.cardInPlay.cardData.cardRemainInPlay == 0)) {
                 players.ForEach(p => {
-                    if (p.cardInPlay.cardData.cardRemainInPlay == 0) {
+                    if (p.cardInPlay && p.cardInPlay.cardData.cardRemainInPlay == 0) {
                         ResolveCard(p.cardInPlay);
                         p.DiscardCardInPlay();
                     }
