@@ -9,14 +9,17 @@ using Random = UnityEngine.Random;
 public class Player : MonoBehaviour
 {
     [Header("Player Data")]
-    public float currentOxygenTank = 20f;
+    public float currentOxygenTank = 0f;
     public int oxygenTanks = 2;
-    public float oxygenPerTank = 20f;
+    public float oxygenPerTank = 60f;
     public float baseOxygenComsumptionMinute = 1f;
     public float baseOxygenProductionMinute = 0f;
     public float distanceToSurface = 500f;
     public float massToRise = 200f;
     public float coefMassToSpeed = 0.5f;
+    public int baseTimeToWait = 10;
+    public int playerWaitingTime = 0;
+    public int basePlayerDrawCardsWaiting = 5;
     public PlayerState playerState = PlayerState.Regular;
     public CardInstance selectedCard;
     public CardInstance cardInPlay;
@@ -51,6 +54,7 @@ public class Player : MonoBehaviour
 
     void Start() {
         GameManager.I.RegisterPlayer(this);
+        currentOxygenTank = oxygenPerTank;
         CardData cardData = Resources.Load<CardData>("CardDatas/CardThink");
         #if !UNITY_EDITOR
             usePrebuiltStartDeck = false;
@@ -213,7 +217,6 @@ public class Player : MonoBehaviour
         CardInstance card = Instantiate(cardInstancePrefab);
         card.SetCardData(cardData);
         card.player = this;
-        card.baseMass = Random.Range(cardData.cardType.minCardMass, cardData.cardType.maxCardMass);
         if (place == PlayerCardPlace.Hand) AddCardToHand(card);
         else  {
             card.SetCardActive(false);
@@ -297,8 +300,9 @@ public class Player : MonoBehaviour
             float speed = (currentMassToRise - currentMass) * coefMassToSpeed;
             distanceToSurface -= speed;
         }
-        if (cardInPlay != null)
-        {
+        if (playerWaitingTime > 0) {
+            if (--playerWaitingTime == 0) ResolveWaitingEffect();
+        } else if (cardInPlay != null) {
             cardInPlay.remainInPlay -= 1;
             if (cardInPlay.remainInPlay <= 0)
             {
@@ -313,7 +317,19 @@ public class Player : MonoBehaviour
         }
     }
 
-    public bool IsReadyForMinutePass => playerState == PlayerState.Regular && cardInPlay && (!cardInPlay.cardData.CardRequiresTarget || cardInPlay.targetCard);
+    void ResolveWaitingEffect() {
+        foreach (CardInstance card in hand) {
+            bool shouldDiscard = GameManager.I.GetAllGameEffectsForPlayer(this).Aggregate(true, (discard, effect) => effect.gameEffect.OnEvaluateWaitingDiscard(discard, card));
+            if (shouldDiscard) DiscardCard(card);
+        }
+        for (int i = 0; i < basePlayerDrawCardsWaiting; i++) DrawCard();
+    }
+
+    public void StartWaiting() {
+        if (playerWaitingTime == 0) playerWaitingTime = baseTimeToWait;
+    }
+
+    public bool IsReadyForMinutePass => playerState == PlayerState.Regular && (cardInPlay && (!cardInPlay.cardData.CardRequiresTarget || cardInPlay.targetCard) || playerWaitingTime > 0);
 
     float EvaluateOxygenPerMinute() {
         return EvaluateOxygenProductionPerMinute() - EvaluateOxygenConsumptionPerMinute();
