@@ -132,7 +132,7 @@ public class Player : MonoBehaviour
             cardInPlay.transform.SetParent(cardPlayZone);
             selectedCard = null;
             GameManager.I.PlayCard(this, cardInPlay);
-            CheckLoseConditions();
+            CheckDeadCardsLoseCondition();
             return true;
         }
         return false;
@@ -154,7 +154,6 @@ public class Player : MonoBehaviour
             card.transform.position = cardDiscardZone.transform.position;
             card.transform.SetParent(cardDiscardZone);
             cardInPlay = null;
-            CheckLoseConditions();
             return;
         }
 
@@ -175,7 +174,7 @@ public class Player : MonoBehaviour
         card.SetCardActive(false);
         card.transform.position = cardDiscardZone.transform.position;
         card.transform.SetParent(cardDiscardZone);
-        CheckLoseConditions();
+        CheckDeadCardsLoseCondition();
     }
 
     public void AddPlayerGameEffectsForCard(CardInstance card) {
@@ -220,7 +219,7 @@ public class Player : MonoBehaviour
         card.transform.SetParent(handCenter);
         RepositionCardsInHand();
         card.cardData.cardEffects.ForEach(ce => ce.OnDraw(this, card));
-        CheckLoseConditions();
+        CheckDeadCardsLoseCondition();
     }
 
     public void DrawCard() {
@@ -273,24 +272,15 @@ public class Player : MonoBehaviour
 
     bool IsDeadCard(CardInstance card) => card != null && GameManager.I != null && card.cardData == GameManager.I.deadCard;
 
-    void CheckLoseConditions() {
-        if (playerState == PlayerState.Win || playerState == PlayerState.Lose) return;
-        if (HasLoseCondition()) {
+    void CheckDeadCardsLoseCondition() {
+        if (DeadCardLoseCondition()) {
             GetCardsInCabin().ToList().ForEach(card => card.cardData.cardEffects.ForEach(ce => ce.OnDeath(this, card)));
-            if (HasLoseCondition()) ChangeState(PlayerState.Lose);
+            if (DeadCardLoseCondition()) ChangeState(PlayerState.Lose);
         }
-    }
-
-    bool HasLoseCondition() {
-        return DeadCardLoseCondition() || OxygenLoseCondition();
     }
 
     bool DeadCardLoseCondition() {
         return hand.Count > 0 && hand.All(IsDeadCard);
-    }
-
-    bool OxygenLoseCondition() {
-        return currentOxygenTank <= 0f && oxygenTanks <= 0;
     }
 
     bool RemoveCardFromPlaces(CardInstance card) {
@@ -310,7 +300,7 @@ public class Player : MonoBehaviour
         if (!RemoveCardFromPlaces(card)) return;
 
         card.cardData.cardEffects.ForEach(ce => ce.OnRemove(this));
-        CheckLoseConditions();
+        CheckDeadCardsLoseCondition();
         card.transform.DOKill();
         Destroy(card.gameObject);
     }
@@ -328,7 +318,7 @@ public class Player : MonoBehaviour
             Destroy(card.gameObject);
         }
 
-        CheckLoseConditions();
+        CheckDeadCardsLoseCondition();
     }
 
     public void ResolveMinutePassPlayer() {
@@ -339,8 +329,6 @@ public class Player : MonoBehaviour
             currentOxygenTank += EvaluateOxygenPerTank();
             DealsManager.I.StartDealSelect(this);
         } // I think, that it is better to withdraw all oxygen, not zero out(cancel out) all requirements just because of changes of gallon...
-        CheckLoseConditions();
-        if (playerState == PlayerState.Lose) return;
         float currentMass = EvaluateTotalMass();
         float currentMassToRise = EvaluateMassToRise();
         if (currentMass < currentMassToRise) {
@@ -368,7 +356,7 @@ public class Player : MonoBehaviour
         if (distanceToSurface <= 0) {
             ChangeState(PlayerState.Win);
         } else {
-            CheckLoseConditions();
+            CheckDeadCardsLoseCondition();
         }
     }
 
