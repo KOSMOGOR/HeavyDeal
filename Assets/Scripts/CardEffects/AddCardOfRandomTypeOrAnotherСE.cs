@@ -11,7 +11,7 @@ public class AddCardOfRandomTypeOrAnotherСE : TriggeredCardEffect
     public PlayerCardPlace whereToAdd;
 
     public override string Description => $"Добавляет {(amountCardsToAdd == 1 ? "случайную карту" : $"{amountCardsToAdd} случайных карт")} типа {cardTypeToAdd.cardTypeName} в {AddCardСE.CardPlace(whereToAdd)}" +
-        $", с шансом {(int)(chanceToAddAnotherType * 100)}% тип карты будет {anotherCardTypeToAdd}";
+        $", с шансом {(int)(chanceToAddAnotherType * 100)}% тип карты будет {anotherCardTypeToAdd.cardTypeName}";
 
     protected override void Apply(Player player) {
         for (int i = 0; i < amountCardsToAdd; i++) {

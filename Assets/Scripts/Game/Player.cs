@@ -104,6 +104,7 @@ public class Player : MonoBehaviour
             if (selectedCard) selectedCard.transform.DOScale(1f, 0.5f);
             selectedCard = card;
             card.transform.DOScale(1.1f, 0.5f);
+            RepositionCardsInHand();
         }
     }
 
@@ -185,8 +186,17 @@ public class Player : MonoBehaviour
 
     void RepositionCardsInHand() {
         if (hand.Count == 0) return;
+        bool wasSelected = false;
         float startX = handCenter.position.x - (hand.Count - 1) * handDeltaDistance / 2;
-        for (int i = 0; i < hand.Count; i++) hand[i].transform.DOMove(new(startX + handDeltaDistance * i, handCenter.position.y, handCenter.position.z), 1f).SetEase(Ease.OutCubic);
+        for (int i = 0; i < hand.Count; i++) {
+            float x = startX + handDeltaDistance * i;
+            wasSelected |= selectedCard == hand[i];
+            if (selectedCard && selectedCard != hand[i]) {
+                if (!wasSelected) x -= handDeltaDistance;
+                else x += handDeltaDistance;
+            }
+            hand[i].transform.DOMove(new(x, handCenter.position.y, handCenter.position.z), 1f).SetEase(Ease.OutCubic);
+        }
     }
 
     void ShuffleDiscardToDeck() {

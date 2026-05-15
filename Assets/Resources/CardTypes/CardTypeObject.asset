@@ -15,3 +15,4 @@ MonoBehaviour:
   cardTypeName: "\u041E\u0431\u044A\u0435\u043A\u0442"
   minCardMass: 30
   maxCardMass: 40
+  cardSprite: {fileID: -6415739848415903161, guid: 77849dc6a953da74a9adde8fb78af15e, type: 3}

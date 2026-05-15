@@ -16,6 +16,7 @@ MonoBehaviour:
   cardType: {fileID: 11400000, guid: 185a8fde2058cf4489141a76c6027c42, type: 2}
   canBePlayed: 0
   cardRemainInPlay: 0
+  cardSpriteOverride: {fileID: 4396710915872977648, guid: ffb42fc37d08fa74799896c664dfffed, type: 3}
   cardEffects: []
   gameEffectsOnResolve: []
   playerGameEffectsOnResolve: []
