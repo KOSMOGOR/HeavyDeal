@@ -80,6 +80,7 @@ public class Player : MonoBehaviour
                 delta = EvaluateListMass(deck) - startMass;
                 bigger = delta > 0;
             }
+            deck.Shuffle();
         }
         for (int i = 0; i < startPlayerHandSize; i++) DrawCard();
         endGameText.enabled = false;
@@ -125,6 +126,7 @@ public class Player : MonoBehaviour
             hand.Remove(card);
             cardInPlay = card;
             SetCardPlace(cardInPlay, PlayerCardPlace.InPlay);
+            cardInPlay.transform.DOKill();
             cardInPlay.transform.DOScale(1f, 0.25f);
             cardInPlay.transform.DOMove(cardPlayZone.position, 0.5f).SetEase(Ease.OutCubic);
             cardInPlay.transform.SetParent(cardPlayZone);
@@ -207,7 +209,7 @@ public class Player : MonoBehaviour
             card.transform.SetParent(cardDeckZone);
         });
         discard.Clear();
-        deck.OrderBy(_ => Random.value);
+        deck.Shuffle();
     }
 
     public void AddCardToHand(CardInstance card) {

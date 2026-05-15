@@ -1,4 +1,5 @@
 using System.Linq;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -50,5 +51,6 @@ public class CardInstance : MonoBehaviour
     public void CardReset() {
         remainInPlay = cardData.cardRemainInPlay;
         targetCard = null;
+        transform.DOScale(1f, 0.5f);
     }
 }

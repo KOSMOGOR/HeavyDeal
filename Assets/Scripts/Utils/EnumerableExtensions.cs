@@ -12,4 +12,14 @@ public static class EnumerableExtensions
         if (values.Count() == 0) return default;
         return values.ElementAt(Random.Range(0, values.Count()));
     }
+
+
+    public static void Shuffle<T>(this List<T> values) {
+        int n = values.Count;
+        while (n > 1) {
+            n--;
+            int k = Random.Range(0, n);
+            (values[n], values[k]) = (values[k], values[n]);
+        }
+    }
 }
