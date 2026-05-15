@@ -1,10 +1,13 @@
+#if !UNITY_WEBGL
 using Firebase;
 using Firebase.Crashlytics;
 using Firebase.Extensions;
+#endif
 using UnityEngine;
 
 public class FirebaseConnector : MonoBehaviour
 {
+#if !UNITY_WEBGL
     public static FirebaseApp app;
 
     void Start() {
@@ -19,4 +22,5 @@ public class FirebaseConnector : MonoBehaviour
         }
         });
     }
+#endif
 }
