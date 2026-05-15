@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using Firebase.Analytics;
 using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -433,6 +434,9 @@ public class Player : MonoBehaviour
         if (playerState == PlayerState.Win || playerState == PlayerState.Lose) {
             endGameText.enabled = true;
             endGameText.text = playerState == PlayerState.Win ? "Победа" : "Поражение";
+#if !UNITY_WEBGL
+            FirebaseAnalytics.LogEvent(playerState == PlayerState.Win ? "PlayerWin" : "PlayerLose");
+#endif
         } else if (playerState == PlayerState.Waiting) {
             playerWaitingTime = baseWaitingTime;
         }
