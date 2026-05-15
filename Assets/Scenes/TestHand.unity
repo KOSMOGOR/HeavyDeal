@@ -696,7 +696,7 @@ MonoBehaviour:
   cardInPlay: {fileID: 0}
   cardInstancePrefab: {fileID: 1540875196657098900, guid: 26b59c0aaef5f224d9cdc7f2080702c4, type: 3}
   handCenter: {fileID: 1978390054}
-  handDeltaDistance: 50
+  handDeltaDistance: 55
   cardDeckZone: {fileID: 2013719417}
   cardDiscardZone: {fileID: 1498881060}
   cardPlayZone: {fileID: 1971643314}
