@@ -272,7 +272,7 @@ public class Player : MonoBehaviour
 
     bool IsDeadCard(CardInstance card) => card != null && GameManager.I != null && card.cardData == GameManager.I.deadCard;
 
-    void CheckDeadCardsLoseCondition() {
+    public void CheckDeadCardsLoseCondition() {
         if (DeadCardLoseCondition()) {
             GetCardsInCabin().ToList().ForEach(card => card.cardData.cardEffects.ForEach(ce => ce.OnDeath(this, card)));
             if (DeadCardLoseCondition()) ChangeState(PlayerState.Lose);
@@ -281,6 +281,17 @@ public class Player : MonoBehaviour
 
     bool DeadCardLoseCondition() {
         return hand.Count > 0 && hand.All(IsDeadCard);
+    }
+
+    void ApplyNoOxygenPenalty() {
+        if (currentOxygenTank > 0f || oxygenTanks > 0 || GameManager.I == null || GameManager.I.deadCard == null) return;
+
+        List<CardInstance> transformableCards = hand.Where(card => card != null && !IsDeadCard(card)).ToList();
+        if (transformableCards.Count == 0) return;
+
+        CardInstance cardToTransform = transformableCards.GetRandom();
+        if (selectedCard == cardToTransform) selectedCard = null;
+        cardToTransform.SetCardData(GameManager.I.deadCard);
     }
 
     bool RemoveCardFromPlaces(CardInstance card) {
@@ -329,6 +340,7 @@ public class Player : MonoBehaviour
             currentOxygenTank += EvaluateOxygenPerTank();
             DealsManager.I.StartDealSelect(this);
         } // I think, that it is better to withdraw all oxygen, not zero out(cancel out) all requirements just because of changes of gallon...
+        ApplyNoOxygenPenalty();
         float currentMass = EvaluateTotalMass();
         float currentMassToRise = EvaluateMassToRise();
         if (currentMass < currentMassToRise) {

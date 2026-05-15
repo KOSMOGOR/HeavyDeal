@@ -19,5 +19,6 @@ public class SetTargetCardDataCE : TriggeredCardEffect
         if (targetCard == null || targetCard.player != player || !player.Hand.Contains(targetCard)) return;
 
         targetCard.SetCardData(newCardData);
+        player.CheckDeadCardsLoseCondition();
     }
 }
