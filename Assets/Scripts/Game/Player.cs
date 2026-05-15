@@ -132,6 +132,7 @@ public class Player : MonoBehaviour
             cardInPlay.transform.SetParent(cardPlayZone);
             selectedCard = null;
             GameManager.I.PlayCard(this, cardInPlay);
+            RepositionCardsInHand();
             CheckDeadCardsLoseCondition();
             return true;
         }

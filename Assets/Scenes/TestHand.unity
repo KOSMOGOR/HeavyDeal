@@ -713,7 +713,7 @@ MonoBehaviour:
     count: 5
   - cardType: {fileID: 11400000, guid: 185a8fde2058cf4489141a76c6027c42, type: 2}
     count: 3
-  startMass: 350
+  startMass: 300
   maxCardMassDelta: 5
   startPlayerHandSize: 5
   endGameText: {fileID: 11843350}
@@ -1490,8 +1490,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5214e2d787414c4697f246fc60a45b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  secondsToGameMinute: 1
-  delayAfterPlay: 1
+  secondsToGameMinute: 0.25
+  delayAfterPlay: 0.5
   secondsPassedText: {fileID: 808558167}
   deadCard: {fileID: 11400000, guid: 9ba055c24d267b240b51f512cd1a523f, type: 2}
 --- !u!4 &1268429262

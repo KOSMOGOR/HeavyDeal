@@ -21,7 +21,7 @@ public class DealsManager : SingletonMonoBehaviour<DealsManager>
     List<(DealEffect, DealEffect)> GetDeals(Player player) {
         List<(DealEffect positiveDealEffect, DealEffect negativeDealEffect)> deals = new();
         for (int i = 0; i < EvaluateDealsCount(player); i++)
-            deals.Add((positiveDealEffects.dealEffects.OrderBy(_ => Random.value).First(), negativeDealEffects.dealEffects.OrderBy(_ => Random.value).First()));
+            deals.Add((positiveDealEffects.dealEffects.GetRandom(), negativeDealEffects.dealEffects.GetRandom()));
         return deals;
     }
 
