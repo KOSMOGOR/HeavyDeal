@@ -16,6 +16,9 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     readonly List<Player> players = new();
     List<CardData> regularCards;
     public List<CardData> RegularCards => regularCards;
+    public int PlayerCount => players.Count;
+    public bool IsSinglePlayer => players.Count == 1;
+    public bool HasLoseInSinglePlayer => players.Count == 1 && players.Any(player => player.playerState == PlayerState.Lose);
 
     protected override void AwakeNew() {
         regularCards = Resources.LoadAll<CardData>("CardDatas").ToList();
