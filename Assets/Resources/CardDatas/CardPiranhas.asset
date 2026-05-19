@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b207b14b86641441989e55c8fafd528, type: 3}
+  m_Name: CardPiranhas
+  m_EditorClassIdentifier: 
+  cardName: "\u041F\u0438\u0440\u0430\u043D\u044C\u0438"
+  cardType: {fileID: 11400000, guid: 185a8fde2058cf4489141a76c6027c42, type: 2}
+  canBePlayed: 0
+  cardRemainInPlay: 0
+  cardEffects:
+  - rid: 7797032002472640623
+  gameEffectsOnResolve: []
+  playerGameEffectsOnResolve: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 7797032002472640623
+      type: {class: ChangeMassToRiseIfNotInPlaceCE, ns: , asm: Assembly-CSharp}
+      data:
+        ignoredPlace: 0
+        massToRiseDelta: -20

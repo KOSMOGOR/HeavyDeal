@@ -1,23 +1,46 @@
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class GameManager : SingletonMonoBehaviour<GameManager>
 {
-    public float secondsToGameMinute = 1;
+    public float secondsToGameMinute = 1f;
+    public float delayAfterPlay = 1f;
+    public TMP_Text secondsPassedText;
+    public CardData deadCard;
+
     float secondsPassed;
 
-    List<GameEffectInstance> gameEffects;
-    List<Player> players;
+    readonly List<GameEffectInstance> gameEffects = new();
+    readonly List<Player> players = new();
+    List<CardData> regularCards;
+    public List<CardData> RegularCards => regularCards;
+    public int PlayerCount => players.Count;
+    public bool IsSinglePlayer => players.Count == 1;
+    public bool HasLoseInSinglePlayer => players.Count == 1 && players.Any(player => player.playerState == PlayerState.Lose);
+
+    protected override void AwakeNew() {
+        regularCards = Resources.LoadAll<CardData>("CardDatas").ToList();
+        Resources.Load<CardDataList>("SpecialCards").cardDatas.ForEach(cd => regularCards.Remove(cd));
+    }
 
     void Update() {
-        if (players.Count > 0 && players.All(p => p.cardInPlay != null)) {
+        if (players.Count > 0 && players.All(p => p.IsReadyForMinutePass)) {
             secondsPassed += Time.deltaTime;
-            if (secondsPassed >= secondsToGameMinute) {
-                secondsPassed -= secondsToGameMinute;
+            if (secondsPassed >= 0 && players.Any(p => p.cardInPlay && p.cardInPlay.cardData.cardRemainInPlay == 0)) {
+                players.ForEach(p => {
+                    if (p.cardInPlay && p.cardInPlay.cardData.cardRemainInPlay == 0) {
+                        ResolveCard(p.cardInPlay);
+                        p.DiscardCardInPlay();
+                    }
+                });
+            } else if (secondsPassed >= secondsToGameMinute) {
+                secondsPassed = 0;
                 ResolveMinutePass();
             }
-        }
+        } else secondsPassed = -delayAfterPlay;
+        if (secondsPassedText) secondsPassedText.text = secondsPassed.ToString("F2");
     }
 
     public void RegisterPlayer(Player player) {
@@ -25,24 +48,13 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     }
 
     void ResolveMinutePass() {
-        // game effects
-        foreach (GameEffectInstance gameEffect in gameEffects) {
-            gameEffect.ResolveMinutePass();
-        }
-        // player game effects
-        foreach (Player player in players) {
-            foreach (GameEffectInstance playerGameEffect in player.playerGameEffects) {
-                playerGameEffect.ResolveMinutePass();
-            }
-        }
         // player cards in play
         foreach (Player player in players) {
-            player.cardInPlay.remainInPlay -= 1;
-            if (player.cardInPlay.remainInPlay <= 0) {
-                ResolveCard(player, player.cardInPlay);
-                player.DiscardCardInPlay();
-            }
+            player.ResolveMinutePassPlayer();
         }
+        // game and player effects
+        GetAllGameEffectsForAllPlayers().ForEach(effect => effect.ResolveMinutePass());
+        // order is better for already applied effects, but still spends 1 minute on newly applied ones, change back, if this works worse
     }
 
     public void PlayCard(Player player, CardInstance card) {
@@ -50,10 +62,28 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
         card.cardData.cardEffects.ForEach(ce => ce.OnPlay(player));
     }
 
-    void ResolveCard(Player player, CardInstance card) {
-        if (!players.Contains(player)) return;
-        card.cardData.cardEffects.ForEach(ce => ce.OnResolve(player));
+    public void ResolveCard(CardInstance card) {
+        if (!players.Contains(card.player)) return;
+        card.cardData.cardEffects.ForEach(ce => ce.OnResolve(card.player));
         card.cardData.gameEffectsOnResolve.ForEach(ge => GameEffectInstance.CreateAndAdd(ge, gameEffects));
-        player.AddPlayerGameEffects(card);
+        card.player.AddPlayerGameEffectsForCard(card);
+    }
+
+    public List<GameEffectInstance> GetAllGameEffectsForPlayer(Player player) {
+        List<GameEffectInstance> effects = new();
+        effects.AddRange(gameEffects);
+        effects.AddRange(player.playerGameEffects);
+        return effects;
+    }
+
+    public List<GameEffectInstance> GetAllGameEffectsForAllPlayers() {
+        List<GameEffectInstance> effects = new();
+        effects.AddRange(gameEffects);
+        players.ForEach(player => effects.AddRange(player.playerGameEffects));
+        return effects;
+    }
+
+    public CardData GetRandomCardOfType(CardType cardType) {
+        return RegularCards.Where(card => card.cardType == cardType).GetRandomOrDefault();
     }
 }

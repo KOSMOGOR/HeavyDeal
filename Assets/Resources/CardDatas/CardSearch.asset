@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b207b14b86641441989e55c8fafd528, type: 3}
+  m_Name: CardSearch
+  m_EditorClassIdentifier: 
+  cardName: "\u041F\u043E\u0438\u0441\u043A"
+  cardType: {fileID: 11400000, guid: 79c8ba33ca238044c8ff7d214d750f47, type: 2}
+  canBePlayed: 1
+  cardRemainInPlay: 0
+  cardEffects:
+  - rid: 7092928946367627339
+  gameEffectsOnResolve: []
+  playerGameEffectsOnResolve: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 7092928946367627339
+      type: {class: "AddCardOfRandomTypeOrAnother\u0421E", ns: , asm: Assembly-CSharp}
+      data:
+        trigger: 3
+        cardTypeToAdd: {fileID: 11400000, guid: 25857be71e9ea5c4b909b6cb8b9b252e, type: 2}
+        amountCardsToAdd: 1
+        anotherCardTypeToAdd: {fileID: 11400000, guid: 074ba46539db80d4cbb9fda3732b97a3, type: 2}
+        chanceToAddAnotherType: 0.1
+        whereToAdd: 0

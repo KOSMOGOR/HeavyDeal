@@ -2,9 +2,23 @@ using System;
 using System.Collections.Generic;
 
 [Serializable]
-public class GameEffect
+public abstract class GameEffect
 {
     public int duration;
+    public bool isPermanent;
+
+    public virtual string DescriptionBase => isPermanent ? "Навсегда: " : $"На {duration} минут: ";
+    public virtual string DescriptionEffect => "Даёт ничего";
+    public virtual string Description => DescriptionBase + DescriptionEffect;
+
+    public virtual float OnEvaluateMass(float mass) => mass;
+    public virtual float OnEvaluateMass(CardInstance card, float mass) => OnEvaluateMass(mass);
+    public virtual float OnEvaluateMassToRise(float massToRise) => massToRise;
+    public virtual float OnEvaluateOxygenConsumption(float oxygen) => oxygen;
+    public virtual float OnEvaluateOxygenProduction(float oxygen) => oxygen;
+    public virtual float OnEvaluateOxygenPerTank(float oxygen) => oxygen;
+    public virtual int OnEvaluateDealsCount(int deals) => deals;
+    public virtual bool OnEvaluateWaitingDiscard(bool discard, CardInstance card) => discard;
 }
 
 public class GameEffectInstance
@@ -27,6 +41,7 @@ public class GameEffectInstance
     }
 
     public void ResolveMinutePass() {
+        if (gameEffect.isPermanent) return;
         remainingDuration -= 1;
         if (remainingDuration <= 0) effectCollection.Remove(this);
     }

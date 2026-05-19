@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: deefd2ef22287fb4d8f1c7b0d60e6caa, type: 3}
+  m_Name: NegativeDealEffectList
+  m_EditorClassIdentifier: 
+  dealEffects:
+  - rid: 7092928969045442636
+  - rid: 7092928969045442637
+  - rid: 7092928969045442639
+  - rid: 7092928969045442642
+  - rid: 7092928969045442644
+  - rid: 7092928969045442646
+  - rid: 7092928969045442647
+  - rid: 7092928969045442648
+  references:
+    version: 2
+    RefIds:
+    - rid: 7092928969045442636
+      type: {class: AddCardDE, ns: , asm: Assembly-CSharp}
+      data:
+        cardToAdd: {fileID: 11400000, guid: 9ba055c24d267b240b51f512cd1a523f, type: 2}
+        amountCardsToAdd: 1
+        whereToAdd: 0
+    - rid: 7092928969045442637
+      type: {class: AddCardDE, ns: , asm: Assembly-CSharp}
+      data:
+        cardToAdd: {fileID: 11400000, guid: 9ba055c24d267b240b51f512cd1a523f, type: 2}
+        amountCardsToAdd: 2
+        whereToAdd: 1
+    - rid: 7092928969045442639
+      type: {class: AddCardOfRandomTypeDE, ns: , asm: Assembly-CSharp}
+      data:
+        cardTypeToAdd: {fileID: 11400000, guid: 185a8fde2058cf4489141a76c6027c42, type: 2}
+        amountCardsToAdd: 2
+        whereToAdd: 1
+    - rid: 7092928969045442642
+      type: {class: AddGameEffectDE, ns: , asm: Assembly-CSharp}
+      data:
+        gameEffect:
+          rid: 7092928969045442643
+    - rid: 7092928969045442643
+      type: {class: AddOxygenConsumptionGE, ns: , asm: Assembly-CSharp}
+      data:
+        duration: 30
+        isPermanent: 0
+        oxygenConsumptionDelta: 1
+    - rid: 7092928969045442644
+      type: {class: AddGameEffectDE, ns: , asm: Assembly-CSharp}
+      data:
+        gameEffect:
+          rid: 7092928969045442645
+    - rid: 7092928969045442645
+      type: {class: AddOxygenConsumptionGE, ns: , asm: Assembly-CSharp}
+      data:
+        duration: 10
+        isPermanent: 0
+        oxygenConsumptionDelta: 3
+    - rid: 7092928969045442646
+      type: {class: ChangeCardMassInPlaceDE, ns: , asm: Assembly-CSharp}
+      data:
+        massCoefToAdd: 0.2
+        placeToChange: 0
+    - rid: 7092928969045442647
+      type: {class: ChangeCardMassInPlaceDE, ns: , asm: Assembly-CSharp}
+      data:
+        massCoefToAdd: 0.1
+        placeToChange: 2
+    - rid: 7092928969045442648
+      type: {class: ChangeCardMassInPlaceDE, ns: , asm: Assembly-CSharp}
+      data:
+        massCoefToAdd: 0.05
+        placeToChange: 1

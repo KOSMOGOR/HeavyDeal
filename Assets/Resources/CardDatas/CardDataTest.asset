@@ -12,3 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b207b14b86641441989e55c8fafd528, type: 3}
   m_Name: CardDataTest
   m_EditorClassIdentifier: 
+  cardName: Cool Card Name
+  cardType: {fileID: 0}
+  cardRemainInPlay: 1
+  cardEffects: []
+  gameEffectsOnResolve: []
+  playerGameEffectsOnResolve: []
+  references:
+    version: 2
+    RefIds: []
